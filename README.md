@@ -1,7 +1,7 @@
-reinterest
+Q-crawler
 ===========
 
-*Reinforcement learning* based Focused Web crawler
+*Reinforcement learning* based Focused Web crawler by improving the Q-function
 
 
 #Introduction
