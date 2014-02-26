@@ -1,6 +1,7 @@
 """
 The downloader that downloads the webpage and scrapes the (URL, surrounding text)
 """
+import urllib2
 
 def download (url):
     """
@@ -11,8 +12,13 @@ def download (url):
     """
     
     #download the page
-    
-    if status == 200 and mime == 'HTML':
-        return document
+    try: 
+        res = urllib2.urlopen(url)
+    except urllib2.HTTPError as err:
+        return None, err.code
+
+    if res.headers.type.lower () == 'text/html':
+        return res.read()
     else:
-        return None
+        return None, res.headers.type.lower ()
+    
