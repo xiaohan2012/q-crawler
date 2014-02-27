@@ -20,16 +20,14 @@ class QRankerTest (unittest.TestCase):
         
         g = Graph ()
         
-        g.add_url(sport.url, sport.words, [ballgame.url])
-        g.add_url(ballgame.url, ballgame.words, [basketball.url]) 
-        g.add_url(basketball.url, basketball.words , [lbj.url, nba.url]) 
-        g.add_url(nba.url, nba.words, [lbj.url, 
-                                       wade.url, sexygirl.url #unvisited ones
-                                   ]) 
-        g.add_url(lbj.url, lbj.words, [nba.url])
+        g.add_url(sport.url, [ballgame])
+        g.add_url(ballgame.url, [basketball]) 
+        g.add_url(basketball.url, [lbj, nba]) 
+        g.add_url(nba.url, [lbj, wade, sexygirl]) 
+        g.add_url(lbj.url, [nba])
 
-        g.add_url(wade.url, wade.words, [])
-        g.add_url(sexygirl.url, sexygirl.words, [])
+        g.add_url(wade.url, [])
+        g.add_url(sexygirl.url, [])
 
         self.g = g
         
@@ -65,7 +63,7 @@ class QRankerTest (unittest.TestCase):
         """
         the url with the highest score
         """
-        best_url = self.g.most_potential_url ()
+        best_url, words = self.g.most_potential_url ()
         self.assertEqual (best_url, 'wade.com')
         
         

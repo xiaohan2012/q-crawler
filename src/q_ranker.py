@@ -16,17 +16,20 @@ class Graph (nx.DiGraph):
 
         super(Graph, self).__init__()
         
-    def add_url (self, url, words, dest_urls = []):
+    def add_url (self, src_url, urlinfo):
         """
-        add (url, dest_url) pairs to the graph
-        """
-
-        self.add_node (url, words = words)
-
-        self.add_edges_from (map (lambda dest_url: (url, dest_url), dest_urls))
+        add urls to the graph
         
-        for dest_url in dest_urls:
-            self.backlinks [dest_url].append (url)
+        src_url: url that points to the urlinfo
+        urlinfo: urlinfo to be added
+        """
+        
+        self.add_nodes_from (map (lambda (url, words): (url, {'words': words}), urlinfo))
+
+        self.add_edges_from (map (lambda (url, _): (src_url, url), urlinfo))
+        
+        for url,_ in urlinfo:
+            self.backlinks [url].append (src_url)
             
     def get_back_links (self, url):
         """
@@ -80,11 +83,14 @@ class Graph (nx.DiGraph):
         """
         For those unvisited urls (those pointing to nothing), return the most potential one
         Return:
-        the url with the highest ranking score
+        the url with the highest ranking score and its surrounding words
         """
         #get the unvisited urls
         urls = self.unvisited_urls ()
         
         scores = self.url_scores (urls)
-        #rank the score of each url in the graph
-        return max( urls, key=lambda url: scores [url])
+
+        #rank the score of each url in the graph        
+        url = max( urls, key=lambda url: scores [url])
+
+        return  url, self.node [url] ['words']
