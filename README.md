@@ -31,30 +31,9 @@ Input: a URL pool intialized with seed URLs and a topical classifier
 
 Through several informative places, some hints about what webpage behind the URL might be about can be found through:
 
-1. The sentence that contains the link
-2. The title of the link
-3. The display text of the link
-4. Of course, tags that comes from social bookmarking/tagging system
-
-##Sentence
-
-If the sentence is too short, then probably one or more sentence(s) preceding or appending it gives hint on what the URL is about.
-
-Simple rules:
-
-1. If the sentence is more than or equal to 10 words, then we assume only this sentence is about the URL
-2. Else if the sentence is less than 10 words and greater than 5 words and the preceding or appending sentence (if exist) does not contain link, then we assume the preceding or appending sentence belongs to the URL.
-3. Else if the sentence is less than 5 words and the preceding or appending two sentences (if exist) does not contain link, then we assume the preceding or appending sentences belong to the URL.
-
-*Note*: Can I build a classifier that segments this sentences according to which URL it is talking about?
-
-##Title
-
-The title should be contribute itsself completely to the description about the URL
-
-##Link text
-
-Same case as the previous one
+1. Surrouding text of the url
+2. The title of the url
+3. The display text of the url
 
 #Classifier
 
