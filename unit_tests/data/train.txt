@@ -1,0 +1,6 @@
+FREE,online,!!!:spam
+results,repository,online:ham
+FREE,online,results,FREE,!!!:spam
+!!!,registration,FREE,!!!:spam
+conference,online,registration,conference:ham
+conference,results,repository,rsults:ham
