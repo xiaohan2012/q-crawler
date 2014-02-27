@@ -27,7 +27,7 @@ class Graph (nx.DiGraph):
         
         for dest_url in dest_urls:
             self.backlinks [dest_url].append (url)
-        
+            
     def get_back_links (self, url):
         """
         the urls that point to `url`
@@ -46,7 +46,6 @@ class Graph (nx.DiGraph):
         """
         if level >= 0: #within the progagating distance
             
-
             #add the score for current url's words
             node = self.node [url]
 
@@ -60,12 +59,32 @@ class Graph (nx.DiGraph):
             for back_url in backurls:
                 #the link receives the reward and add distribute them back to the words
                 self.propagate (back_url, gamma * score, gamma, level - 1, reached + (back_url, ))
-
-    def most_potential_url (self, urls):
+                
+    def unvisited_urls (self):
         """
-        urls: list of  (URL string, surrouing text)
+        nodes whose outdegree is zero
+        """
+        degrees = self.out_degree ()
+        return filter(lambda url: degrees[url] == 0, degrees)
         
+    def url_scores (self, urls):
+        """
+        return dict of (url, score)
+        """
+        #function the map words to score
+        words_score = lambda words: sum(map (lambda w: self.word_score [w], words))
+        
+        return dict(map (lambda url: (url, words_score(self.node [url] ['words'])), urls))
+
+    def most_potential_url (self):
+        """
+        For those unvisited urls (those pointing to nothing), return the most potential one
         Return:
         the url with the highest ranking score
         """
+        #get the unvisited urls
+        urls = self.unvisited_urls ()
         
+        scores = self.url_scores (urls)
+        #rank the score of each url in the graph
+        return max( urls, key=lambda url: scores [url])
