@@ -5,7 +5,7 @@ import q_ranker
 from downloader import download
 from scraper import scrape
 
-def main (pool, classifier):
+def main (pool, classifier, q_ranker):
     """
     Given the starting URL seed list and the topical classifier and start crawling the web!
     """
@@ -27,8 +27,11 @@ def main (pool, classifier):
         #rate the webpage
         score = classifier.rate (webpage)
         
+        #add the link pairs to the graph
+        q_ranker.add (url, urls)
+        
         #update the Q function
-        q_ranker.update (url, webpage, score)
+        q_ranker.progapate (url, webpage, score)
         
         #add the urls to the pool
         pools.add (urls)
