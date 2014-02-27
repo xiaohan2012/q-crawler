@@ -18,7 +18,7 @@ def download (url):
         return None, err.code
 
     if res.headers.type.lower () == 'text/html':
-        return res.read()
+        return res.read(), None
     else:
         return None, res.headers.type.lower ()
     

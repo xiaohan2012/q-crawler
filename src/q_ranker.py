@@ -10,11 +10,15 @@ class Graph (nx.DiGraph):
     """
     A Graph where nodes are the urls and edges are the links
     """
-    def __init__ (self):
+    def __init__ (self, initial_urls = []):
         self.word_score = defaultdict (int) #the weight for each word
         self.backlinks = defaultdict (list) #the backlink map
-
+        
+        
         super(Graph, self).__init__()
+        
+        #add the initial urls
+        self.add_nodes_from (initial_urls)
         
     def add_links (self, links):
         """
@@ -80,7 +84,10 @@ class Graph (nx.DiGraph):
         #function get url score
         def url_score (url):
             #the mean score calculated from all links that point to it
-            return sum(map(lambda back_url: words_score(self.edge [back_url] [url] ['words']), self.backlinks [url])) / len (self.backlinks [url])
+            if len (self.backlinks [url]) == 0: #no backlinks, the inital seed?
+                return 0
+            else:
+                return sum(map(lambda back_url: words_score(self.edge [back_url] [url] ['words']), self.backlinks [url])) / len (self.backlinks [url])
         
         #for each url, get links that point to it
         return dict(map (lambda url: (url, url_score(url)), urls))

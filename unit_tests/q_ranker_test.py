@@ -27,8 +27,9 @@ class QRankerTest (unittest.TestCase):
                  (porn, sexygirl, {'words': ['oral', 'sex', 'asian']}),
                  (lbj, nba, {'words': ['nba', 'player', 'heat']}),
                  (basketball, lbj, {'words': ['nba', 'player', 'miami']})]
-        
-        g = Graph ()
+
+        unrelated_urls = ['starcraft.com', 'yummy.com', 'motherlove.com']
+        g = Graph (unrelated_urls)
         
         g.add_links (links)
         
@@ -59,7 +60,7 @@ class QRankerTest (unittest.TestCase):
         """
         get all out-degree=0 nodes
         """
-        expected = {'wade.com', 'sexygirl.com'}
+        expected = {'wade.com', 'sexygirl.com', 'starcraft.com', 'yummy.com', 'motherlove.com'}
         self.assertEqual (set(self.g.unvisited_urls ()), expected)
         
     def test_most_potential_url (self):
