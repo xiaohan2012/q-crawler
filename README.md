@@ -1,6 +1,8 @@
 Q-crawler
 ===========
 
+[![Build Status](https://travis-ci.org/xiaohan2012/q-crawler.png?branch=master)](https://travis-ci.org/xiaohan2012/q-crawler)
+
 *Reinforcement learning* based Focused Web crawler by improving the Q-function
 
 
