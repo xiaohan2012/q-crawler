@@ -6,39 +6,42 @@ from src.q_ranker import Graph
 class QRankerTest (unittest.TestCase):
     def setUp (self):
         from collections import namedtuple
-        UrlInfo = namedtuple ('UrlInfo', 'url words') #handy tuple (url, words)
-        
-        sport = UrlInfo ('sport.com', ['sport',  'basketball',  'swimming'])
-        ballgame = UrlInfo ('ball-game.com', ['ballgame', 'basketball', 'football'])
-        basketball = UrlInfo ('basketball.com', ['nba', 'cba', 'yao'])
-        nba = UrlInfo ('nba.com', ['nba', 'lbj', 'heat'])
-        lbj = UrlInfo ('lbj.com', ['nba', 'star', 'heat'])
 
+        sport = 'sport.com' 
+        ballgame = 'ball-game.com' 
+        basketball = 'basketball.com' 
+        nba = 'nba.com' 
+        lbj = 'lbj.com' 
         #unvisited urls
-        wade = UrlInfo ('wade.com', ['nba', 'wade', 'heat'])
-        sexygirl = UrlInfo ('sexygirl.com', ['nba', 'sexy', 'girl'])
+        wade = 'wade.com'
+        sexygirl = 'sexygirl.com'
+        #unralted site
+        porn = 'porn.com'
+        
+        links = [(sport, ballgame, {'words':  ['ballgame', 'basketball', 'football']}),
+                 (ballgame, basketball, {'words': ['nba', 'cba', 'yao']}),
+                 (basketball, nba, {'words': ['nba', 'association', 'basketball']}),
+                 (nba, lbj, {'words': ['nba', 'lbj', 'heat']}),
+                 (nba, wade, {'words': ['nba', 'star', 'heat']}),
+                 (nba, sexygirl, {'words': ['nba', 'sexy', 'girl']}),
+                 (porn, sexygirl, {'words': ['oral', 'sex', 'asian']}),
+                 (lbj, nba, {'words': ['nba', 'player', 'heat']}),
+                 (basketball, lbj, {'words': ['nba', 'player', 'miami']})]
         
         g = Graph ()
         
-        g.add_url(sport.url, [ballgame])
-        g.add_url(ballgame.url, [basketball]) 
-        g.add_url(basketball.url, [lbj, nba]) 
-        g.add_url(nba.url, [lbj, wade, sexygirl]) 
-        g.add_url(lbj.url, [nba])
-
-        g.add_url(wade.url, [])
-        g.add_url(sexygirl.url, [])
-
+        g.add_links (links)
+        
         self.g = g
         
         #propagate the rewards
-        g.propagate (nba.url, 1, gamma = 0.7, level = 2, reached = (nba.url,))
+        g.propagate (nba, 1, gamma = 0.7, level = 2, reached = (nba,))
         
     def test_propagation (self):
         """
         test what word scores resulted from the progagation 
         """
-        expected = [('nba', 2.89), ('heat', 1.7), ('cba', 1.19), ('yao', 1.19), ('lbj', 1), ('star', 0.7), ('basketball', 0.49), ('ballgame', 0.49), ('football', 0.49)]
+        expected = [('nba', 3.4), ('player', 1.7), ('heat', 1), ('basketball', 1), ('association', 1), ('miami', 0.7), ('cba', 0.7), ('yao', 0.7)]
         for word, score  in expected:
             self.assertAlmostEqual(self.g.word_score [word], score)
 
@@ -47,7 +50,7 @@ class QRankerTest (unittest.TestCase):
         url scores for urls
         """
         scores = self.g.url_scores (['wade.com', 'sexygirl.com'])
-        expected = {'wade.com': 2.89 + 1.7, 'sexygirl.com': 2.89}
+        expected = {'wade.com': 3.4 + 1, 'sexygirl.com': 1.7}
         
         for url, score  in expected.items ():
             self.assertAlmostEqual (score, scores [url])
@@ -63,7 +66,7 @@ class QRankerTest (unittest.TestCase):
         """
         the url with the highest score
         """
-        best_url, words = self.g.most_potential_url ()
+        best_url = self.g.most_potential_url ()
         self.assertEqual (best_url, 'wade.com')
         
         

@@ -16,20 +16,17 @@ class Graph (nx.DiGraph):
 
         super(Graph, self).__init__()
         
-    def add_url (self, src_url, urlinfo):
+    def add_links (self, links):
         """
-        add urls to the graph
+        add links to the graph and record the backlink
         
         src_url: url that points to the urlinfo
         urlinfo: urlinfo to be added
         """
-        
-        self.add_nodes_from (map (lambda (url, words): (url, {'words': words}), urlinfo))
+        self.add_edges_from(links)
 
-        self.add_edges_from (map (lambda (url, _): (src_url, url), urlinfo))
-        
-        for url,_ in urlinfo:
-            self.backlinks [url].append (src_url)
+        for src_url, dest_url, _ in links:
+            self.backlinks [dest_url].append (src_url)
             
     def get_back_links (self, url):
         """
@@ -47,19 +44,22 @@ class Graph (nx.DiGraph):
 
         This function propagates the score/reward of the webpage to its backlinks
         """
-        if level >= 0: #within the progagating distance
-            
+        if level >= 1: #within the progagating distance
             #add the score for current url's words
             node = self.node [url]
-
-            for word in node ['words']:
-                self.word_score [word] += score
 
             #get the webpage's backlinks and filter out those ancetors as propagating back the reward is not permitted
             backurls = filter(lambda u: u not in reached, self.get_back_links (url))
             
             #recursively propagate the discounted score
             for back_url in backurls:
+                #get the link
+                words = self.edge [back_url][url] ['words']
+
+                #update the word sore
+                for word in words:
+                    self.word_score [word] += score
+                    
                 #the link receives the reward and add distribute them back to the words
                 self.propagate (back_url, gamma * score, gamma, level - 1, reached + (back_url, ))
                 
@@ -77,7 +77,13 @@ class Graph (nx.DiGraph):
         #function the map words to score
         words_score = lambda words: sum(map (lambda w: self.word_score [w], words))
         
-        return dict(map (lambda url: (url, words_score(self.node [url] ['words'])), urls))
+        #function get url score
+        def url_score (url):
+            #the mean score calculated from all links that point to it
+            return sum(map(lambda back_url: words_score(self.edge [back_url] [url] ['words']), self.backlinks [url])) / len (self.backlinks [url])
+        
+        #for each url, get links that point to it
+        return dict(map (lambda url: (url, url_score(url)), urls))
 
     def most_potential_url (self):
         """
@@ -93,4 +99,4 @@ class Graph (nx.DiGraph):
         #rank the score of each url in the graph        
         url = max( urls, key=lambda url: scores [url])
 
-        return  url, self.node [url] ['words']
+        return  url

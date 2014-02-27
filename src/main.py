@@ -5,36 +5,39 @@ import q_ranker
 from downloader import download
 from scraper import scrape
 
-def main (pool, classifier, q_ranker):
+def main (classifier, q_ranker):
     """
     Given the starting URL seed list and the topical classifier and start crawling the web!
     """
 
-    while pool.isEmpty ():#continue the process until the URL pool is exhausted
+    while len(q_ranker.unvisited_urls ()) == 0:#continue the process until the URL pool is exhausted
         
         #select from the pool that the URL has the highest Q-value/action value
-        url = q_ranker.most_potential_url (pool)
+        url, words = q_ranker.most_potential_url ()
 
         #fetch the page
         webpage = download (url)
-
+        
+        print 'start crawling %s' url
         if webpage == None: #invalid page encountered
+            print 'failed to crawling %s' url
             continue
         
-        #scrape the urls
-        urls = scrape (webpage)
+        print 'crawled page %s' %url
         
-        #rate the webpage
-        score = classifier.rate (webpage)
+        #scrape the urls
+        urlinfo = scrape (webpage)
         
         #add the link pairs to the graph
-        q_ranker.add (url, urls)
+        q_ranker.add_url (url, urlinfo)
+
+        #rate the webpage
+        score = classifier.predict (webpage)
+        print 'Relevance score: %.4f' %score
         
         #update the Q function
         q_ranker.progapate (url, webpage, score)
         
-        #add the urls to the pool
-        pools.add (urls)
 
 if __name__ == "__main__":
     from classifier import NBClassifier, read_trainset
