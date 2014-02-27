@@ -72,7 +72,7 @@ class ScraperTest (unittest.TestCase):
         """
         title and link text exceeds 25
         """
-        doc = open ('pages/long_title_linktext.html').read ()
+        doc = open (setting.DIRNAME + '/pages/long_title_linktext.html').read ()
         links = scrape_url (doc)
         self.assertEqual ([('http://long_title.com', ['if', 'the', 'sentence', 'is', 'more', 'than', 'or', 'equal', 'to', '10', 'words', 'then', 'we', 'assume', 'only', 'this', 'sentence', 'is', 'about', 'the', 'url', 'it', 'is', 'really', 'really', 'long'])], links)
 
@@ -80,7 +80,7 @@ class ScraperTest (unittest.TestCase):
         """
         title and link words number fewer 25 thus need to get words from surrounding. In case the surrounding the text nodes
         """
-        doc = open ('pages/short_title_linktext.html').read ()
+        doc = open (setting.DIRNAME + '/pages/short_title_linktext.html').read ()
         links = scrape_url (doc)
         self.assertEqual ([('http://short_title.com', ['bla', 'bla', 'bla', 'bla', 'bla', 'bla', 'bla', 'bla', 'bla', 'it', 'is', 'really', 'short', 'bla', 'bla', 'bla', 'bla', 'bla', 'bla', 'bla', 'bla', 'bla', 'bla', 'bla', 'bla'])], links)
 
@@ -88,7 +88,7 @@ class ScraperTest (unittest.TestCase):
         """
         title and link words number fewer 25 thus need to get words from surrounding. In case the surrounding the element nodes
         """
-        doc = open ('pages/short_title_linktext_using_span.html').read ()
+        doc = open (setting.DIRNAME + '/pages/short_title_linktext_using_span.html').read ()
         links = scrape_url (doc)
         self.assertEqual ([('http://short_title.com', ['bla', 'bla', 'bla', 'bla', 'bla', 'bla', 'bla', 'bla', 'bla', 'it', 'is', 'really', 'short', 'bla', 'bla', 'bla', 'bla', 'bla', 'bla', 'bla', 'bla', 'bla', 'bla', 'bla', 'bla'])], links)
 
@@ -96,7 +96,7 @@ class ScraperTest (unittest.TestCase):
         """
         title and link words number fewer 25 thus need to get words from surrounding. In case its ancestor
         """
-        doc = open ('pages/short_title_linktext_using_ancestor.html').read ()
+        doc = open (setting.DIRNAME + '/pages/short_title_linktext_using_ancestor.html').read ()
         links = scrape_url (doc)
         self.assertEqual ([('http://short_title.com', ['bla', 'bla', 'bla', 'bla', 'bla', 'bla', 'bla', 'bla', 'bla', 'it', 'is', 'really', 'short', 'bla', 'bla', 'bla', 'bla', 'bla', 'bla', 'bla', 'bla', 'bla', 'bla', 'bla', 'bla'])], links)
 
@@ -104,7 +104,7 @@ class ScraperTest (unittest.TestCase):
         """
         title and link words number fewer 25 thus need to get words from surrounding. In case its ancestor
         """
-        doc = open ('pages/insufficient_words.html').read ()
+        doc = open (setting.DIRNAME + '/pages/insufficient_words.html').read ()
         links = scrape_url (doc)
         self.assertEqual ([('http://short_title.com', ['insufficient', 'really', 'insufficient'])], links)
         

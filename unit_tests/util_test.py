@@ -8,8 +8,9 @@ class ReadTrainDataTest (unittest.TestCase):
     test the read_traindata function
     """
     def setUp (self):
-        self.filename = 'data/train.txt'
-        
+        self.filename = setting.DIRNAME + '/data/train.txt'
+        print self.filename
+
     def test_ordinary (self):
         rows = util.read_traindata (self.filename)
         

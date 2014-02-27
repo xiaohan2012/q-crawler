@@ -10,7 +10,7 @@ class NBClassifierTest (unittest.TestCase):
         first train the model
         """
         self.classifier = NBClassifier ()
-        traindata = read_traindata ('data/train.txt')
+        traindata = read_traindata (setting.DIRNAME + '/data/train.txt')
         self.classifier.train (traindata)
 
     def test_prediction1 (self):
