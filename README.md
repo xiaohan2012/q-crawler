@@ -59,10 +59,6 @@ Once we found a good webpage (e.g, Python), the terms in which webpages (e.g, so
 
 We assume terms in webpages which are within distance of 5 are rewarded.
 
-##Normalization
-
-To bound the term weight, they are normalized after each Q-function update.
-
 
 
 
