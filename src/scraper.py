@@ -4,6 +4,7 @@ The scraper that scrapes (text, surrounding text) from webpages
 import re, string, math
 from itertools import chain
 from pyquery import PyQuery as pq
+from url_validate import is_valid
 
 def strip_all_tags_except (doc, tag_names):
     """
@@ -18,9 +19,9 @@ def strip_all_tags_except (doc, tag_names):
         """
         result = []
         for content in contents:
-            if isinstance(content, str):
+            if isinstance(content, basestring):
                 result.append (content)
-            elif content.tag in tag_names: #is string or the tag we want
+            elif hasattr (content, 'tag') and content.tag in tag_names: #it has tag (standard element) and it the tag we want
                 result.append (pq (content).outerHtml ())
             elif content is not None:
                 result.extend(aux (pq(content).contents ()))
@@ -101,8 +102,11 @@ def scrape_url (doc):
                     return prepending_words [-prepending_half:] + title + link_text + appending_words [:appending_half]
             else: #that is it
                 return prepending_words + title + link_text + appending_words
- 
-    links = map(lambda link: (pq(link).attr ('href'), get_surrouding_words (link)), filter(lambda ele: not isinstance(ele, str) and ele.tag == 'a', sequence))
+                
+    links = map(lambda link: (pq(link).attr ('href'), get_surrouding_words (link)), filter(lambda ele: 
+                                                                                           hasattr(ele, 'tag') and ele.tag == 'a' and  
+                                                                                           isinstance(pq(ele).attr ('href'), basestring) and is_valid(pq(ele).attr ('href')),  #filter out those bad-formated url
+                                                                                           sequence)) 
     
     #return them
     return links

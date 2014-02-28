@@ -20,7 +20,7 @@ class NBClassifierTest (unittest.TestCase):
         sample = ['FREE', 'online', 'conference', '!!!']
         prediction = self.classifier.predict (sample)
 
-        self.assertEqual (prediction, [(u'spam', 0.8371836806110771), (u'ham', 0.16281631938892294)])
+        self.assertEqual (prediction, {u'spam': 0.8371836806110771, u'ham': 0.16281631938892294})
 
     def test_prediction2 (self):
         """
@@ -29,7 +29,7 @@ class NBClassifierTest (unittest.TestCase):
         sample = ['conference', 'registration', 'results', 'conference', 'online']
         prediction = self.classifier.predict (sample)
         
-        self.assertEqual (prediction, [(u'ham', 0.9683852022829362), (u'spam', 0.031614797717063825)])
+        self.assertEqual (prediction, {u'ham': 0.9683852022829362, u'spam': 0.031614797717063825})
 
     def test_unknown_words (self):
         """
@@ -38,7 +38,7 @@ class NBClassifierTest (unittest.TestCase):
         sample = ['conference', 'registration', 'results', 'conference', 'online', '(&^*^*&^*']
         prediction = self.classifier.predict (sample)
         
-        self.assertEqual (prediction, [(u'ham', 0.9698452719061822), (u'spam', 0.030154728093817886)])
+        self.assertEqual (prediction, {u'ham': 0.9698452719061822, u'spam': 0.030154728093817886})
 
 
 if __name__ == "__main__":
