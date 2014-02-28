@@ -64,3 +64,9 @@ We assume terms in webpages which are within distance of 5 are rewarded.
 
 
 
+#Future
+
+1. mark the visited url as visited
+2. Some functional tests
+3. make url absolute
+4. avoid this kind of stuffjavascript:void(0) 
