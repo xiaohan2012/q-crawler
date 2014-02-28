@@ -85,17 +85,23 @@ class NBClassifier (Classifier):
 
         Return: list of (class, the probability) in ascending order sorted by the probability
         """
+        get_prob = lambda cls, word: self.cpd [cls] [word if self.cpd [cls].has_key (word) else '__RARE__'] #handy function that gives P (word|cls)
+        
         probs = {}
         total = 0
         for cls in self.classes:
+
+            #selec the five most representative words
+            top50 = sorted (words, key = lambda word: get_prob (cls, word), reverse = True) [:50]
+            
             #if rare words are seen, use the __RARE__ item
-            probs [cls] = reduce (lambda acc, word: acc * self.cpd [cls] [word if self.cpd [cls].has_key (word) else '__RARE__'] , words, self.pt [cls])
+            probs [cls] = reduce (lambda acc, word: acc * get_prob (cls, word), top50, self.pt [cls])
             total += probs [cls]
             
         #normalization
         for cls in self.classes:
             probs [cls] /= total
             
-        return sorted(probs.items (), key=lambda p: p [1], reverse = True)
+        return probs
         
         
