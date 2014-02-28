@@ -6,7 +6,7 @@ Essentially, it gives each term a
 import networkx as nx
 from collections import defaultdict
 
-class Graph (nx.DiGraph):
+class QGraph (nx.DiGraph):
     """
     A Graph where nodes are the urls and edges are the links
     """
@@ -15,7 +15,7 @@ class Graph (nx.DiGraph):
         self.backlinks = defaultdict (list) #the backlink map
         
         
-        super(Graph, self).__init__()
+        super(QGraph, self).__init__()
         
         #add the initial urls
         self.add_nodes_from (initial_urls)
@@ -28,7 +28,7 @@ class Graph (nx.DiGraph):
         urlinfo: urlinfo to be added
         """
         self.add_edges_from(links)
-
+                
         for src_url, dest_url, _ in links:
             self.backlinks [dest_url].append (src_url)
             
@@ -71,8 +71,8 @@ class Graph (nx.DiGraph):
         """
         nodes whose outdegree is zero
         """
-        degrees = self.out_degree ()
-        return filter(lambda url: degrees[url] == 0, degrees)
+
+        return map (lambda (url, _): url, filter(lambda (_,degree): degree == 0, self.out_degree_iter ()))
         
     def url_scores (self, urls):
         """

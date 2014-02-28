@@ -1,9 +1,9 @@
 import setting
 import unittest
 
-from src.q_ranker import Graph
+from src.q_ranker import QGraph
 
-class QRankerTest (unittest.TestCase):
+class QGraphTest (unittest.TestCase):
     def setUp (self):
         from collections import namedtuple
 
@@ -29,7 +29,7 @@ class QRankerTest (unittest.TestCase):
                  (basketball, lbj, {'words': ['nba', 'player', 'miami']})]
 
         unrelated_urls = ['starcraft.com', 'yummy.com', 'motherlove.com']
-        g = Graph (unrelated_urls)
+        g = QGraph (unrelated_urls)
         
         g.add_links (links)
         
