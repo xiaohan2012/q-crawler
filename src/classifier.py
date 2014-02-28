@@ -17,6 +17,9 @@ class Classifier ():
         raise NotImplementedError
 
 class NBClassifier (Classifier):
+    """
+    The Naive Bayes classifier
+    """
     
     def train (self, texts, rare_threshold = 1):
         """
@@ -31,7 +34,6 @@ class NBClassifier (Classifier):
         """
 
         #compute the prob table for classes, class frequencies
-
         clsFreq = Counter (map (lambda (t, cls): cls, texts))
 
         pt = {}
@@ -47,7 +49,7 @@ class NBClassifier (Classifier):
         #group texts by class
         textsGroupedByCls = groupby (sorted (texts, key = lambda tpl: tpl [1]), lambda tpl: tpl [1])
 
-        cpd = {}
+        cpd = {} #the conditional probability table
 
         #for each class
         for cls, listOfTexts in textsGroupedByCls:
@@ -77,11 +79,11 @@ class NBClassifier (Classifier):
 
     def predict (self, words):
         """
-        Give the probability that the document is classified as positive
+        Give the probabilities that the document belongs to each topic
         
         words: list of word (str)
 
-        Return: list of (class, the probability) in ascending order by the probability
+        Return: list of (class, the probability) in ascending order sorted by the probability
         """
         probs = {}
         total = 0
