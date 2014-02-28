@@ -2,13 +2,16 @@ import setting
 import unittest
 
 from src.downloader import download
+from pyquery import PyQuery as pq
 
 class DownloadTest (unittest.TestCase):
 
     def test_normal (self):
         url = 'http://example.com/'
         doc = download (url)
-        self.assertTrue ('Example Domain' in doc)
+        title = pq (doc).find ('title').text ()
+        print title
+        self.assertTrue ('Example Domain', title)
 
     def test_404 (self):
         url = 'http://www.cs.helsinki.fi/u/hxiao/rl-seminar/paper.pd'
