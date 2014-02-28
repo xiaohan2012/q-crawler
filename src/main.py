@@ -3,52 +3,51 @@ The main program for q-crawler
 """
 import q_ranker
 from downloader import download
-from scraper import scrape
+from scraper import scrape_url
 
-def main (classifier, q_ranker):
+def main (ranker, classifier, topic):
     """
     Given the starting URL seed list and the topical classifier and start crawling the web!
     """
-
-    while len(q_ranker.unvisited_urls ()) == 0:#continue the process until the URL pool is exhausted
+    while len(ranker.unvisited_urls ()) != 0:#continue the process until the URL pool is exhausted
         
         #select from the pool that the URL has the highest Q-value/action value
-        url, words = q_ranker.most_potential_url ()
-
-        #fetch the page
-        webpage = download (url)
+        url = ranker.most_potential_url ()
         
-        print 'start crawling %s' url
+        #fetch the page
+        webpage, addition_info = download (url)
+        
+        print 'start crawling %s' %url
         if webpage == None: #invalid page encountered
-            print 'failed to crawling %s' url
+            print 'failed to crawl %s. Reason: ' %(url), addition_info
             continue
         
         print 'crawled page %s' %url
         
         #scrape the urls
-        urlinfo = scrape (webpage)
+        urlinfo = scrape_url (webpage)
         
-        #add the link pairs to the graph
-        q_ranker.add_url (url, urlinfo)
+        #add the links to the graph
+        ranker.add_links (map (lambda (dest_url, words): (url, dest_url, {'words': words}), urlinfo))
 
         #rate the webpage
         score = classifier.predict (webpage)
-        print 'Relevance score: %.4f' %score
+        print 'Classification result', score
         
         #update the Q function
-        q_ranker.progapate (url, webpage, score)
+        ranker.propagate (url, score [topic])
         
 
 if __name__ == "__main__":
-    from classifier import NBClassifier, read_trainset
-    from url_pool import URLPool
-    from util import read_trainset
+    from classifier import NBClassifier
+    from q_ranker import QGraph
+    from util import read_traindata
     
     #train the classifier, which could be cached actually
     classifier = NBClassifier ()
-    classifier.train (read_trainset(data))
+    classifier.train (read_traindata('unit_tests/data/train.txt'))
     
-    seed_urls = [] #to be filled later
-    pool = URLPool (seed_urls)
+    seed_urls = ['http://www.python.org/', 'http://www.spam.com/'] #to be filled later
+    g = QGraph (seed_urls)
     
-    main (seend_urls, NBclassifier)
+    main (g, classifier, topic = 'spam')
