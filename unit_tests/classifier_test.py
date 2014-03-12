@@ -57,22 +57,34 @@ class NBClassifierRealTest (unittest.TestCase):
         """
         first train the model
         """
-        random.seed (123456)
         documents = [(map(lambda word: word.lower (), list(movie_reviews.words(fileid))), category)
                      for category in movie_reviews.categories()
                      for fileid in movie_reviews.fileids(category)]
+
+        random.seed (123456)
         random.shuffle (documents)
-        self.documents = documents
+
+        train_set, self.test_set = documents[100:], documents[:100]
         
         self.classifier = NBClassifier ()
-        self.classifier.train (documents)
+        self.classifier.train (train_set)
         
-    def est_prior (self):
+    def test_accuracy (self):
         """
         first train the model
         """
-        print self.classifier.cpd
-        self.assertEqual(self.classifier.pt, {'pos': 0.5, 'neg': .5} )
+        def get_label (doc):
+            table = self.classifier.predict (doc)
+            return max (table.keys (), key=lambda label: table[label])
+
+        predicted_labels = map(lambda (doc, label): get_label (doc) , self.test_set)
+        true_labels = map (lambda (doc, label): label, self.test_set)
+        correct_count = sum(map (lambda (tl, pl): tl == pl and 1 or 0, zip (true_labels, predicted_labels)))
+
+        actual = correct_count / float(len (true_labels))
+        expected = .81
+
+        self.assertAlmostEqual (actual, expected)
         
 if __name__ == "__main__":
     unittest.main ()
