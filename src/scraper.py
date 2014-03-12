@@ -4,109 +4,100 @@ The scraper that scrapes (text, surrounding text) from webpages
 import re, string, math
 from itertools import chain
 from pyquery import PyQuery as pq
+from urlparse import urljoin
+
 from url_validate import is_valid
 
-def strip_all_tags_except (doc, tag_names):
+
+def should_climbup (node):
     """
-    strip all tags in the doc except those included in `tag_names`
-
-    return the 'sanitized' html string
+    determine if the node has some meaningful siblings (including text)
+    stuff like "\n  " or "  \t   " is not meaningful
     """
-    def aux (contents):
-        """
-        auxiliary funciton:
-        strip all the contents of tags except thos included in 'tag_names'
-        """
-        result = []
-        for content in contents:
-            if isinstance(content, basestring):
-                result.append (content)
-            elif hasattr (content, 'tag') and content.tag in tag_names: #it has tag (standard element) and it the tag we want
-                result.append (pq (content).outerHtml ())
-            elif content is not None:
-                result.extend(aux (pq(content).contents ()))
+    return len(filter(lambda c: c.strip () != "" if isinstance (c,basestring) else True, node.parent().contents())) == 1
 
-        return result
-        
-    return ' '.join(aux (pq(doc).contents ()))
-
-def line2words (line):
+def text2words (text):
     """
-    remove redundent spaces and punctuations
-    all words to lower case :-(
-
-    then turn the line to words
-    """
-    return map(lambda w: w.lower (), re.sub ('[\t\n%s]+' %string.punctuation, ' ', line).split ())
-
-
-def html2words (html):
-    """
-    convert one piece of html to words and tags
-    """
-    sequence = []
-    #map the text to words
-    for node in pq(html).contents ():
-
-        if isinstance(node, str):
-            sequence.extend (line2words (node))
-        else:
-            sequence.append (node)
-
-    return sequence
+    from text to list of words
     
+    """
+    return map(lambda w: w.strip (), text. split ())
+    
+def collect_words (node, start_offset, max_offset):
+    """
+    collect (text, offset) pairs from node
+    in which the offset is offseted by start_offset
+    this process is done recursively within max_offset
+    """
+    if start_offset > max_offset: #stop when out of range
+        return []
 
-def scrape_url (doc):
+
+    real_contents = filter(lambda c: c.strip () != "" if isinstance (c,basestring) else True, 
+                           node.contents()) #filter out meaningless text
+    
+    is_text = lambda obj: isinstance (obj, basestring)
+    
+    text = filter(is_text, 
+                  real_contents)
+    
+    words = [(word, start_offset) for t in text for word in text2words (t)]
+
+    elems = filter(lambda obj: not is_text (obj), 
+                   real_contents)
+
+    for elem in elems:
+        words += collect_words (pq (elem), start_offset + 1, max_offset)
+        
+    return words
+    
+def scrape_url (doc, page_url, level = 3):
     """
     Given the document, return the (url, surrounding words) pairs
     """
-    sufficient_word_number = 25
-    
-    striped_html = strip_all_tags_except (doc, ['a']) 
-    sequence = html2words (striped_html) #the word, word, link, word... sequence
-   
-    def get_surrouding_words (linkelem):
+    doc = pq (doc)#to pq obj
+    def get_words (linkelem):
         """
-        The words representing the link
-        
-        The rule is:
-        If the word count in title and link text > sufficient_word_number, then using the words in title and link text is ok
-        Else, search from siblings(then parents) for more text. If there is no more text, forget about it
+        Get the (word, offset) pairs representing the link
         """
         link = pq (linkelem)
 
-        title = link.attr("title") != None and line2words(link.attr("title")) or []
-
-        link_text = line2words(link.text())
-
-        get_words = lambda seq: filter (lambda sth: isinstance (sth, str), seq)
+        title = link.attr("title") != None and line2words(link.attr("title")) or ""
+        anchor_text = link.text ()
         
-        remaining_count = sufficient_word_number - len(title) - len (link_text)
- 
-        if remaining_count <= 0:
-            return title + link_text
-        else:
+        words = map(lambda w: (w, 0),#with offset 0
+                    text2words (title) + text2words (anchor_text))
+        
+        starting_point = link
             
-            index = sequence.index (linkelem)
-            prepending_words = get_words (sequence [:index]); prepending_count = len(prepending_words)
-            appending_words = get_words (sequence [index:]); appending_count = len(appending_words)
+        #keep climbing to until the ancestor level has some siblings
+        while should_climbup (starting_point):
+            starting_point = starting_point.parent ()
+
+
+        #creeping along the siblings, 
+        #get each word and its offset to the link
+
+        prevs, nexts = map(lambda elem: pq (elem),
+                    starting_point.prevAll () [::-1]), map(lambda elem: pq (elem), 
+                                                           starting_point.nextAll ())
+
+        #creeping backward (the previous siblings)
+        for offset, node in zip(xrange (1, level+1), prevs[: level]):
+            to_be_negative_words = collect_words (node, offset, level)
+            print to_be_negative_words
+            words += map(lambda (_, offset): (_, -offset), to_be_negative_words)#reverse the offset (from positive integer to negative)
             
-            prepending_half = int(math.floor(float(remaining_count) / 2))
-            appending_half = int(math.ceil(float(remaining_count) / 2))
-            if prepending_count + appending_count >= remaining_count:
-                if appending_count <= appending_half: #prepending words are not enough to fill in half
-                    return prepending_words [-(remaining_count - appending_count):] + title + link_text + appending_words
-                elif prepending_count <= prepending_half: #appending words are not enough to fill in half
-                    return prepending_words + title + link_text + appending_words [:(remaining_count - prepending_count)]
-                else:#both are enough
-                    return prepending_words [-prepending_half:] + title + link_text + appending_words [:appending_half]
-            else: #that is it
-                return prepending_words + title + link_text + appending_words
-                
-    links = map(lambda link: (pq(link).attr ('href'), get_surrouding_words (link)), filter(lambda ele: 
-                                                                                           hasattr(ele, 'tag') and ele.tag == 'a' and  
-                                                                                           isinstance(pq(ele).attr ('href'), basestring) and is_valid(pq(ele).attr ('href')),  #filter out those bad-formated url
-                                                                                           sequence)) 
-    
-    #return them
-    return links
+        #creeping forward (the next siblings)
+        for offset, node in zip(xrange (1, level+1), nexts[: level]):
+            words += collect_words (node, offset, level)
+        
+        return words
+        
+    link_word_pairs = map (lambda a: (urljoin (page_url, pq (a).attr ("href")), #from relative url path to absolute url path and collect the words
+                                      sorted(get_words(a), key=lambda (w, offset): offset)),  #sort it according to offset
+                           filter(lambda a: 
+                                  pq (a).attr ("href") != None, #get urls that make sense
+                                  doc.find ("a")))
+
+    return link_word_pairs

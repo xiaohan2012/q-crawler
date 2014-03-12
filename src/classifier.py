@@ -30,8 +30,6 @@ class NBClassifier (Classifier):
         rare_threshold: what is the minimum frequency of words that we would not consider it as rare
         
         Return: None
-
-        
         """
 
         #compute the prob table for classes, class frequencies
@@ -77,6 +75,12 @@ class NBClassifier (Classifier):
                 
         self.pt = pt
         self.cpd = cpd
+
+    def incremental_train (self, rows):
+        """
+        train based on an older model (somwhat trained), instead of erasing everything out
+        """
+        
 
     def predict (self, words):
         """
