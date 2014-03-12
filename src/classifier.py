@@ -3,6 +3,7 @@ The document classifier that gives the probability that a document belongs to a 
 """
 
 from __future__ import division
+import math
 from itertools import groupby
 from collections import Counter
 
@@ -79,29 +80,21 @@ class NBClassifier (Classifier):
 
     def predict (self, words):
         """
-        Give the probabilities that the document belongs to each topic
+        Give the probabilities that the document belongs to each topic (**using log exp trick**)
         
         words: list of word (str)
 
         Return: list of (class, the probability) in ascending order sorted by the probability
         """
-        get_prob = lambda cls, word: self.cpd [cls] [word if self.cpd [cls].has_key (word) else '__RARE__'] #handy function that gives P (word|cls)
+        get_log_prob = lambda cls, word: math.log(self.cpd [cls] [word if self.cpd [cls].has_key (word) else '__RARE__']) #handy function that gives log(P (word|cls))
         
-        probs = {}
-        total = 0
+        log_probs = {}
         for cls in self.classes:
-
-            #selec the five most representative words
-            top50 = sorted (words, key = lambda word: get_prob (cls, word), reverse = True) [:50]
-            
             #if rare words are seen, use the __RARE__ item
-            probs [cls] = reduce (lambda acc, word: acc * get_prob (cls, word), top50, self.pt [cls])
-            total += probs [cls]
+            log_probs [cls] = reduce (lambda acc, word: acc + get_log_prob (cls, word), words, math.log(self.pt [cls]))
             
-        #normalization
-        for cls in self.classes:
-            probs [cls] /= total
-            
-        return probs
+        B = max (log_probs.values ())
+        total = math.log (sum (map (lambda b_c: math.exp (b_c - B), log_probs.values()))) + B
         
+        return dict(map (lambda (cls, log_prob): (cls, math.exp(log_prob - total)),  log_probs.items ()))        
         
