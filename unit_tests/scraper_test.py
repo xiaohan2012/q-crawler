@@ -9,16 +9,37 @@ class ScraperTest (unittest.TestCase):
     """
     test for the scraper for URL
     """
-    def test_long_title (self):
+    def test_simple1 (self):
         """
-        title and link text exceeds 25
+        faked webpge
         """
         doc = open (setting.DIRNAME + '/pages/simple_page.html').read ()
         links = scrape_url (doc, "http://whut.edu.cn/cs/0809/random/random", level = 3)
         self.assertEqual ([('http://whut.edu.cn/cs/0809/feng.html', 
                             sorted([("inside-tt1", -2), ("inside-tt2", -2), ("beside-tt1",-1),("beside-tt2",-1), ("text-inside-a", 0),("font-inside-a", 0),("inside-li-1", 1),("inside-li-2", 2), ("inside-em", 3)], 
                                    key=lambda (w,offset): offset))], 
-                          links)
+                        links)
+
+    def test_simple_with_noisy_tags (self):
+        """
+        faked webpge with noisy tags such as script and style
+        """
+        doc = open (setting.DIRNAME + '/pages/simple_page_with_noise.html').read ()
+        links = scrape_url (doc, "http://whut.edu.cn/cs/0809/random/random", level = 3)
+        self.assertEqual ([('http://whut.edu.cn/cs/0809/feng.html', 
+                            sorted([("inside-tt1", -2), ("inside-tt2", -2), ("beside-tt1",-1),("beside-tt2",-1), ("text-inside-a", 0),("font-inside-a", 0),("inside-li-1", 1),("inside-li-2", 2), ("inside-em", 3)], 
+                                   key=lambda (w,offset): offset))], 
+                        links)
+
+    def test_real1 (self):
+        """
+        some real page
+        """
+        doc = open (setting.DIRNAME + '/pages/scrape_realpage1.html').read ()
+        links = scrape_url (doc, "http://stackoverflow.com/questions/22378181/how-to-handle-large-input-size-in-java", level = 3)
+        print "links=", links
+        
+        
 
 class ShouldClimbupTest (unittest.TestCase):
     """
@@ -72,6 +93,6 @@ class CollectWordsTest (unittest.TestCase):
         words = collect_words (next_li, 1, 3)
         expected = []
         self.assertEqual (sorted (words), sorted (expected))
-
+        
 if __name__ == "__main__":
     unittest.main ()

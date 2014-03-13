@@ -51,18 +51,22 @@ def collect_words (node, start_offset, max_offset):
         
     return words
     
-def scrape_url (doc, page_url, level = 3):
+def scrape_url (doc, page_url, level = 3, unnecessary_tags = ['script', 'style']):
     """
     Given the document, return the (url, surrounding words) pairs
     """
     doc = pq (doc)#to pq obj
+    
+    for tag in unnecessary_tags:#remove uncessary tags
+        doc (tag).remove ()
+        
     def get_words (linkelem):
         """
         Get the (word, offset) pairs representing the link
         """
         link = pq (linkelem)
 
-        title = link.attr("title") != None and line2words(link.attr("title")) or ""
+        title = link.attr("title") != None and link.attr("title") or ""
         anchor_text = link.text ()
         
         words = map(lambda w: (w, 0),#with offset 0
@@ -85,7 +89,7 @@ def scrape_url (doc, page_url, level = 3):
         #creeping backward (the previous siblings)
         for offset, node in zip(xrange (1, level+1), prevs[: level]):
             to_be_negative_words = collect_words (node, offset, level)
-            print to_be_negative_words
+            #print to_be_negative_words
             words += map(lambda (_, offset): (_, -offset), to_be_negative_words)#reverse the offset (from positive integer to negative)
             
         #creeping forward (the next siblings)
@@ -99,5 +103,16 @@ def scrape_url (doc, page_url, level = 3):
                            filter(lambda a: 
                                   pq (a).attr ("href") != None, #get urls that make sense
                                   doc.find ("a")))
-
     return link_word_pairs
+
+if __name__ == "__main__":
+    import sys
+    if len(sys.argv) == 3:
+        page_path = sys.argv[1]
+        page_url = sys.argv[2]
+        doc = open (page_path).read ()
+        links = scrape_url (doc, page_url, level = 3)
+        for url, words in links:
+            print url, words
+    else:
+        print 'wrong number of arguments'
