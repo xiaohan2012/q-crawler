@@ -6,11 +6,9 @@ from itertools import chain
 from pyquery import PyQuery as pq
 from urlparse import urljoin
 
-from nltk.stem.lancaster import LancasterStemmer
-
 from url_validate import is_valid
+from util import normalize_word
 
-st = LancasterStemmer()
 
 def should_climbup (node):
     """
@@ -24,7 +22,7 @@ def text2words (text):
     from text to list of words (lowercase, stemmed, punctuation removed)
     
     """
-    return map(lambda w: st.stem(w.strip ().lower ()), 
+    return map(lambda w: normalize_word (w), 
                text. split ())
     
 def collect_words (node, start_offset, max_offset):

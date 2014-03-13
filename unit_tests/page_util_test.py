@@ -1,7 +1,7 @@
 import setting
 import unittest
 
-from src.page_util import clean
+from src.page_util import clean, valid_word
 
 class PageCleanTest (unittest.TestCase):
     """
