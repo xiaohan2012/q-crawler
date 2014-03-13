@@ -85,6 +85,37 @@ class NBClassifierRealTest (unittest.TestCase):
         expected = .81
 
         self.assertAlmostEqual (actual, expected)
+
+class NBClassifierIncrementalTrainTest (unittest.TestCase):
+    def setUp (self):
+        """
+        first train the model
+        """
+        self.classifier = NBClassifier ()
+        traindata = read_traindata (setting.DIRNAME + '/data/train.txt')
+        self.classifier.train (traindata)
+
+    def test_train (self):
+        """
+        test prediction for sample 1
+        """
+        samples = [(['FREE', 'online', 'food', '!!!'], 'spam' ),
+                  (['interesting', 'stuff', 'online'], 'ham')]
         
+        prediction = self.classifier.train (samples)
+
+        expected = {'spam': sorted({u'!!!': 5, u'FREE': 5, u'online': 3, u'results': 1, u'registration': 1, u'food': 1}.items ()),
+                    'ham': sorted({u'conference': 3, u'repository': 2, u'online': 3, u'results': 2, u'rsults': 1, u'registration': 1, u'interesting': 1, u'stuff': 1}.items ())}
+        
+        self.assertEqual (sorted(self.classifier.labels ()), sorted(['ham', 'spam'])) #test label set
+        
+        for label in self.classifier.labels ():
+            self.assertEqual (expected [label], sorted(self.classifier.feature_freq () [label].items ())) #feature frequency
+            self.assertEqual (4, self.classifier.label_freq () [label])#label frequency
+            
+        #test vocabulary
+        self.assertEqual (self.classifier.vocabulary (), set([u'conference', u'rsults', u'!!!', u'repository', 'food', 'interesting', u'online', u'results', u'FREE', 'stuff', '__RARE__', u'registration']))
+        
+
 if __name__ == "__main__":
     unittest.main ()

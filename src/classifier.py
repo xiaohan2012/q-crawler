@@ -5,7 +5,7 @@ The document classifier that gives the probability that a document belongs to a 
 from __future__ import division
 import math
 from itertools import groupby
-from collections import Counter
+from collections import Counter, defaultdict
 
 class Classifier ():
     """
@@ -21,10 +21,30 @@ class NBClassifier (Classifier):
     """
     The Naive Bayes classifier
     """
-    
+    def __init__ (self):
+        self._label_freq = Counter ()
+        self._feature_freq = defaultdict (Counter) #the counter for features under different labels
+        self._vocabulary = set (['__RARE__'])
+        
+        self._classes = None
+        self.pt = None
+        self.cpd = None
+
+    def label_freq (self):
+        return self._label_freq
+        
+    def feature_freq (self):
+        return self._feature_freq
+
+    def labels(self):
+        return self._classes
+
+    def vocabulary(self):
+        return self._vocabulary
+        
     def train (self, texts, rare_threshold = 1):
         """
-        train the Naive Bayes model
+        train the Naive Bayes model incrementally (based on previous training results)
         
         texts: the list of (document, label) 
         rare_threshold: what is the minimum frequency of words that we would not consider it as rare
@@ -33,23 +53,29 @@ class NBClassifier (Classifier):
         """
 
         #compute the prob table for classes, class frequencies
-        clsFreq = Counter (map (lambda (t, cls): cls, texts))
-
+        label_freq = Counter (map (lambda (t, cls): cls, 
+                                   texts))
+        
         pt = {}
-        for cls in clsFreq.keys ():
-            pt [cls] = clsFreq [cls] / sum(clsFreq.values ())
-
-        self.classes = pt.keys () #the classes
+        for cls in label_freq.keys ():
+            #update the total number
+            self._label_freq [cls] += label_freq [cls]
+            
+        for cls in label_freq.keys ():
+            #compute the prior
+            pt [cls] = self._label_freq [cls] / sum(self._label_freq.values ())
+        
+        self._classes = pt.keys () #the classes
 
         #the vocabulary containing all the words sorted by alphabetical order
-        vocabulary = sorted(list(set([w for words,cls in texts for w in words])) + ['__RARE__'])
+        self._vocabulary =  self._vocabulary.union(set([w for words,cls in texts for w in words]))
 
         #compute the CPD
         #group texts by class
         textsGroupedByCls = groupby (sorted (texts, key = lambda tpl: tpl [1]), lambda tpl: tpl [1])
 
         cpd = {} #the conditional probability table
-
+        
         #for each class
         for cls, listOfTexts in textsGroupedByCls:
             cpd [cls] = {}
@@ -59,28 +85,22 @@ class NBClassifier (Classifier):
 
             #filter out those whose frequency < rare_threshold 
             #and aggragate those rare words' frequency
-            wordFreq = Counter ()
+
             for w in wordFreqRaw:
                     
                 if wordFreqRaw [w] < rare_threshold:
-                    wordFreq ["__RARE__"] += wordFreqRaw [w]
+                    self._feature_freq [cls] ["__RARE__"] += wordFreqRaw [w]
                 else:
-                    wordFreq [w] = wordFreqRaw [w]
-
-            totalCount = sum(wordFreq.values ())
+                    self._feature_freq [cls] [w] += wordFreqRaw [w]
+            
+            totalCount = sum(self._feature_freq [cls].values ())
             
             #for each word in the vocabulary, calcualte the relative frequency (with smoothing)
-            for w in vocabulary:
-                cpd [cls][w] = (wordFreq [w] + 1) / (totalCount + len (vocabulary))
+            for w in self._vocabulary:
+                cpd [cls][w] = (self._feature_freq [cls] [w] + 1) / (totalCount + len (self._vocabulary))
                 
         self.pt = pt
-        self.cpd = cpd
-
-    def incremental_train (self, rows):
-        """
-        train based on an older model (somwhat trained), instead of erasing everything out
-        """
-        
+        self.cpd = cpd        
 
     def predict (self, words):
         """
@@ -93,7 +113,7 @@ class NBClassifier (Classifier):
         get_log_prob = lambda cls, word: math.log(self.cpd [cls] [word if self.cpd [cls].has_key (word) else '__RARE__']) #handy function that gives log(P (word|cls))
         
         log_probs = {}
-        for cls in self.classes:
+        for cls in self._classes:
             #if rare words are seen, use the __RARE__ item
             log_probs [cls] = reduce (lambda acc, word: acc + get_log_prob (cls, word), words, math.log(self.pt [cls]))
             
