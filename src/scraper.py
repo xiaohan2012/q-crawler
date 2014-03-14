@@ -122,9 +122,14 @@ def should_collect_url (url, page_url):
         return True
     return False
     
-def collect_urls ():
-    #ParseResult(scheme='http', netloc='en.wikipedia.org', path='/wiki/Baum%E2%80%93Welch_algorithm', params='', query='', fragment='Forward_Procedure')
-    pass
+def collect_urls (html, page_url):
+    """
+    collect subset of urls from the html 
+    """
+    return filter(lambda url: should_collect_url (url, page_url),
+                  map(lambda a: urljoin(page_url, pq (a).attr ('href')), #get their hrefs
+                      filter (lambda a: pq(a).attr ('href') is not None, #for those which have href attr
+                              pq (html).find ('a'))))
     
 if __name__ == "__main__":
     import sys

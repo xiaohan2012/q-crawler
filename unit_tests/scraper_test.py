@@ -1,7 +1,7 @@
 import setting
 import unittest
 
-from src.scraper import scrape_url_and_words, should_climbup, collect_words, should_collect_url
+from src.scraper import scrape_url_and_words, should_climbup, collect_words, should_collect_url, collect_urls
 
 from pyquery import PyQuery as pq
 
@@ -96,7 +96,11 @@ class CollectWordsTest (unittest.TestCase):
         self.assertEqual (sorted (words), sorted (expected))
 
 class ScrapeUrls (unittest.TestCase):
-    pass
+    def test_basic (self):
+        html = open (setting.DIRNAME + '/pages/collect_url1.html').read ()
+        urls = collect_urls (html, 'http://fakesite.com/subpage')
+        self.assertEqual (urls, ['http://fakesite.com/feng.html'])
+        
     
 if __name__ == "__main__":
     unittest.main ()
