@@ -26,15 +26,14 @@ def html2words (string):
     1, remove all punctuations
     2, remove all numbers
     """
-    print 'cleaning'
     text = clean (string)
 
-    print 'normalizing'
     return '\t'.join(map(lambda w: normalize_word (w), text.split ()))
 
 if __name__ == "__main__":
     import sys, locale, codecs
-    sys.stdout = codecs.getwriter(locale.getpreferredencoding())(sys.stdout);
-    from codecs import open
     path = sys.argv [1]
-    print html2words(open (path, 'r','utf8').read ())
+    
+    sys.stdout = codecs.getwriter(locale.getpreferredencoding())(sys.stdout);
+    
+    print html2words(open (path, 'r').read ())#no need to decode
