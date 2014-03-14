@@ -3,9 +3,12 @@ The document classifier that gives the probability that a document belongs to a 
 """
 
 from __future__ import division
-import math
-from itertools import groupby
+import math, random
+from pickle import load, dump
+from itertools import groupby, izip
 from collections import Counter, defaultdict
+
+from util import read_traindata
 
 class Classifier ():
     """
@@ -147,13 +150,10 @@ class NBClassifier (Classifier):
         total = math.log (sum (map (lambda b_c: math.exp (b_c - B), log_probs.values()))) + B
         
         return dict(map (lambda (cls, log_prob): (cls, math.exp(log_prob - total)),  log_probs.items ()))        
-        
-if __name__ == "__main__":
-    import random
-    from itertools import izip
 
-    from util import read_traindata
-    
+def performance_measure ():
+    """
+    """
     c = NBClassifier ()
 
     print 'reading data... '
@@ -168,7 +168,7 @@ if __name__ == "__main__":
     test_set = dataset [1600:]
     
     print 'training...'
-    c.train ( train_set )#incrementally train
+    c.train ( train_set )
 
     print 'measuring performance'
     def get_label (doc):
@@ -180,3 +180,37 @@ if __name__ == "__main__":
     correct_count = sum(map (lambda (tl, pl): tl == pl and 1 or 0, zip (true_labels, predicted_labels)))
 
     print "Accuracy: %.5f" %(correct_count / float(len (true_labels)))
+
+def read_classifier (path):
+    """
+    read the pickled classifier
+    """
+    return load (open (path, 'r'))
+
+def train_classifier (path = '../data/classifier.pickle'):
+    
+    c = NBClassifier ()
+
+    print 'reading data... '
+    neg = list(read_traindata ('../data/neg'))
+    pos = list(read_traindata ('../data/pos'))
+    
+    dataset = pos + neg
+
+    print 'training...'
+    c.train ( dataset )
+
+    from pickle import dump
+    dump(c, open('../data/classifier.pickle', 'w'))
+    
+if __name__ == "__main__":
+    import sys
+    action = sys.argv [1]
+    if action == 'train':
+        train_classifier ()
+    elif action == 'measure':
+        performance_measure ()
+    else:
+        print 'invalid option'
+    
+    
