@@ -53,7 +53,7 @@ def collect_words (node, start_offset, max_offset):
         
     return words
     
-def scrape_url (doc, page_url, level = 3, unnecessary_tags = ['script', 'style']):
+def scrape_url_and_words (doc, page_url, level = 3, unnecessary_tags = ['script', 'style']):
     """
     Given the document, return the (url, surrounding words) pairs
     """
@@ -102,11 +102,30 @@ def scrape_url (doc, page_url, level = 3, unnecessary_tags = ['script', 'style']
         
     link_word_pairs = map (lambda a: (urljoin (page_url, pq (a).attr ("href")), #from relative url path to absolute url path and collect the words
                                       sorted(get_words(a), key=lambda (w, offset): offset)),  #sort it according to offset
-                           filter(lambda a: 
-                                  pq (a).attr ("href") != None, #get urls that make sense
+                           filter(lambda a:
+                                  pq (a).attr ("href") is not None and 
+                                  should_collect_url (urljoin (page_url, pq (a).attr ("href")), 
+                                                           page_url), #get urls that make sense
                                   doc.find ("a")))
     return link_word_pairs
 
+def should_collect_url (url, page_url):
+    """
+    Determine whether the url should be collected based on the following criteria:
+    
+    - it does not point to `page_url`, an counter example: wikipedia.org/somepage#somefragment and wikipedia.org/somepage
+    """
+    from urlparse import urlparse
+    url = urlparse (url)
+    page_url = urlparse (page_url)
+    if (url.netloc + url.path + url.params + url.query) != (page_url.netloc + page_url.path + page_url.params + page_url.query):
+        return True
+    return False
+    
+def collect_urls ():
+    #ParseResult(scheme='http', netloc='en.wikipedia.org', path='/wiki/Baum%E2%80%93Welch_algorithm', params='', query='', fragment='Forward_Procedure')
+    pass
+    
 if __name__ == "__main__":
     import sys
     if len(sys.argv) == 3:
