@@ -53,39 +53,15 @@ class NBClassifier (Classifier):
         rare_threshold: what is the minimum frequency of words that we would not consider it as rare
         
         Return: None
-        """
+        """            
+        texts = list (texts) #to lists!not generator
         
-        
-        # for text, label in texts:
-        #     self._label_freq [label] += 1
-        #     for word in text:
-        #         self._feature_freq [label] [word] += 1
-        #         self._vocabulary.add (word)
-            
-        # self._classes = self._label_freq.keys()
-
-        # pt = {}
-        # for text, label in texts:
-        #     pt [label] = self._label_freq [label] / sum(self._label_freq.values ())
-
-            
-        # self.pt = pt
-        
-        # cpd = {}
-        # for label in self._classes:
-            
-        #     totalCount = sum(self._feature_freq [label].values ())
-            
-        #     #for each word in the vocabulary, calcualte the relative frequency (with smoothing)
-        #     for w in self._vocabulary:
-        #         cpd [cls][w] = (self._feature_freq [cls] [w] + 1) / (totalCount + len (self._vocabulary))
-
-                
         #compute the prob table for classes, class frequencies
         label_freq = Counter (map (lambda (t, cls): cls, 
                                    texts))
         
         pt = {}
+        
         for cls in label_freq.keys ():
             #update the total number
             self._label_freq [cls] += label_freq [cls]
@@ -102,8 +78,8 @@ class NBClassifier (Classifier):
         #compute the CPD
         #group texts by class
         textsGroupedByCls = groupby (sorted (texts, key = lambda tpl: tpl [1]), lambda tpl: tpl [1])
-
-        cpd = {} #the conditional probability table
+        
+        cpd = defaultdict (dict) #the conditional probability table
         
         #for each class
         for cls, listOfTexts in textsGroupedByCls:
@@ -127,10 +103,11 @@ class NBClassifier (Classifier):
             #for each word in the vocabulary, calcualte the relative frequency (with smoothing)
             for w in self._vocabulary:
                 cpd [cls][w] = (self._feature_freq [cls] [w] + 1) / (totalCount + len (self._vocabulary))
-                
+
         self.pt = pt
         self.cpd = cpd        
-
+        print self.cpd        
+        
     def predict (self, words):
         """
         Give the probabilities that the document belongs to each topic (**using log exp trick**)
@@ -142,8 +119,10 @@ class NBClassifier (Classifier):
         get_log_prob = lambda cls, word: math.log(self.cpd [cls] [word if self.cpd [cls].has_key (word) else '__RARE__']) #handy function that gives log(P (word|cls))
         
         log_probs = {}
+        print self.cpd
         for cls in self._classes:
             #if rare words are seen, use the __RARE__ item
+            print cls
             log_probs [cls] = reduce (lambda acc, word: acc + get_log_prob (cls, word), words, math.log(self.pt [cls]))
             
         B = max (log_probs.values ())
