@@ -6,6 +6,9 @@ import re, string
 from pyquery import PyQuery as pq
 from util import normalize_word
 
+from nltk.corpus import stopwords
+stopwords = stopwords.words ('english')
+
 def clean (doc):
     """
     Cleaning the page:
@@ -19,16 +22,24 @@ def clean (doc):
 
     return  doc.text ()
 
-    
-def html2words (string):
+
+def html2words (html):
     """
     convert an html document to a list of words with some preprocessing:
     1, remove all punctuations
     2, remove all numbers
-    """
-    text = clean (string)
 
-    return '\t'.join(map(lambda w: normalize_word (w), text.split ()))
+    To be implemented:
+    . - / \ then can be used to separate words
+    eg, os.path python/nltk python\gtk
+    """
+    text = clean (html)
+
+    def split_text (text):
+        return re.split("[%s\s]" %re.escape(string.punctuation), text)
+
+    return '\t'.join(filter(lambda w: len (w) != 0 and w not in stopwords, #filter nonstop and noempty words
+                            map(lambda w: normalize_word (w), split_text(text))))
 
 if __name__ == "__main__":
     import sys, locale, codecs
