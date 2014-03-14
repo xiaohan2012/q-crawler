@@ -41,8 +41,8 @@ def html2words (html):
     def split_text (text):
         return re.split("[%s\s]" %re.escape(string.punctuation), text)
 
-    return '\t'.join(filter(lambda w: len (w) != 0 and w not in stopwords, #filter nonstop and noempty words
-                            map(lambda w: normalize_word (w), split_text(text))))
+    return filter(lambda w: len (w) != 0 and w not in stopwords, #filter nonstop and noempty words
+                            map(lambda w: normalize_word (w), split_text(text)))
 
 if __name__ == "__main__":
     import sys, locale, codecs
@@ -50,4 +50,4 @@ if __name__ == "__main__":
     
     sys.stdout = codecs.getwriter(locale.getpreferredencoding())(sys.stdout);
     
-    print html2words(open (path, 'r').read ())#no need to decode
+    print '\t'.join(html2words(open (path, 'r').read ()))#no need to decode

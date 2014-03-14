@@ -29,7 +29,7 @@ class Html2wordsTest (unittest.TestCase):
     """
     def test_basic (self):
         s = "a. b! c~ \n d \t "
-        self.assertEqual (html2words (s), '\t'.join(['b','c','d']))
+        self.assertEqual (html2words (s), ['b','c','d'])
         
 if __name__ == "__main__":
     unittest.main ()
