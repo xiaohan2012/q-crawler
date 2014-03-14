@@ -212,5 +212,3 @@ if __name__ == "__main__":
         performance_measure ()
     else:
         print 'invalid option'
-    
-    
