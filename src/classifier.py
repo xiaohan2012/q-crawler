@@ -51,7 +51,33 @@ class NBClassifier (Classifier):
         
         Return: None
         """
+        
+        
+        # for text, label in texts:
+        #     self._label_freq [label] += 1
+        #     for word in text:
+        #         self._feature_freq [label] [word] += 1
+        #         self._vocabulary.add (word)
+            
+        # self._classes = self._label_freq.keys()
 
+        # pt = {}
+        # for text, label in texts:
+        #     pt [label] = self._label_freq [label] / sum(self._label_freq.values ())
+
+            
+        # self.pt = pt
+        
+        # cpd = {}
+        # for label in self._classes:
+            
+        #     totalCount = sum(self._feature_freq [label].values ())
+            
+        #     #for each word in the vocabulary, calcualte the relative frequency (with smoothing)
+        #     for w in self._vocabulary:
+        #         cpd [cls][w] = (self._feature_freq [cls] [w] + 1) / (totalCount + len (self._vocabulary))
+
+                
         #compute the prob table for classes, class frequencies
         label_freq = Counter (map (lambda (t, cls): cls, 
                                    texts))
@@ -122,3 +148,35 @@ class NBClassifier (Classifier):
         
         return dict(map (lambda (cls, log_prob): (cls, math.exp(log_prob - total)),  log_probs.items ()))        
         
+if __name__ == "__main__":
+    import random
+    from itertools import izip
+
+    from util import read_traindata
+    
+    c = NBClassifier ()
+
+    print 'reading data... '
+    neg = list(read_traindata ('../data/neg'))
+    pos = list(read_traindata ('../data/pos'))
+    
+    dataset = pos + neg
+    random.shuffle(dataset)
+    
+    #partition training and testing set 4:1 
+    train_set = dataset [:1600]
+    test_set = dataset [1600:]
+    
+    print 'training...'
+    c.train ( train_set )#incrementally train
+
+    print 'measuring performance'
+    def get_label (doc):
+        table = c.predict (doc)
+        return max (table.keys (), key=lambda label: table[label])
+
+    predicted_labels = map(lambda (doc, label): get_label (doc) , test_set)
+    true_labels = map (lambda (doc, label): label, test_set)
+    correct_count = sum(map (lambda (tl, pl): tl == pl and 1 or 0, zip (true_labels, predicted_labels)))
+
+    print "Accuracy: %.5f" %(correct_count / float(len (true_labels)))
