@@ -17,6 +17,9 @@ def clean (doc):
     2. irrelevant tag content removed (script, style...)
     """
     doc = pq (doc)
+    
+    doc.remove_namespaces ()#important for selecting elements
+    
     doc ('script').remove ()
     doc ('style').remove ()
 
