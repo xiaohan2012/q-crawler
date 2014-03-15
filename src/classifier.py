@@ -3,12 +3,11 @@ The document classifier that gives the probability that a document belongs to a 
 """
 
 from __future__ import division
-import math, random
-from pickle import load, dump
+import math
 from itertools import groupby, izip
 from collections import Counter, defaultdict
 
-from util import read_traindata
+
 
 class Classifier ():
     """
@@ -44,7 +43,7 @@ class NBClassifier (Classifier):
 
     def vocabulary(self):
         return self._vocabulary
-        
+
     def train (self, texts, rare_threshold = 1):
         """
         train the Naive Bayes model incrementally (based on previous training results)
@@ -106,7 +105,6 @@ class NBClassifier (Classifier):
 
         self.pt = pt
         self.cpd = cpd        
-        print self.cpd        
         
     def predict (self, words):
         """
@@ -119,75 +117,12 @@ class NBClassifier (Classifier):
         get_log_prob = lambda cls, word: math.log(self.cpd [cls] [word if self.cpd [cls].has_key (word) else '__RARE__']) #handy function that gives log(P (word|cls))
         
         log_probs = {}
-        print self.cpd
+
         for cls in self._classes:
             #if rare words are seen, use the __RARE__ item
-            print cls
             log_probs [cls] = reduce (lambda acc, word: acc + get_log_prob (cls, word), words, math.log(self.pt [cls]))
             
         B = max (log_probs.values ())
         total = math.log (sum (map (lambda b_c: math.exp (b_c - B), log_probs.values()))) + B
         
         return dict(map (lambda (cls, log_prob): (cls, math.exp(log_prob - total)),  log_probs.items ()))        
-
-def performance_measure ():
-    """
-    """
-    c = NBClassifier ()
-
-    print 'reading data... '
-    neg = list(read_traindata ('../data/neg'))
-    pos = list(read_traindata ('../data/pos'))
-    
-    dataset = pos + neg
-    random.shuffle(dataset)
-    
-    #partition training and testing set 4:1 
-    train_set = dataset [:1600]
-    test_set = dataset [1600:]
-    
-    print 'training...'
-    c.train ( train_set )
-
-    print 'measuring performance'
-    def get_label (doc):
-        table = c.predict (doc)
-        return max (table.keys (), key=lambda label: table[label])
-
-    predicted_labels = map(lambda (doc, label): get_label (doc) , test_set)
-    true_labels = map (lambda (doc, label): label, test_set)
-    correct_count = sum(map (lambda (tl, pl): tl == pl and 1 or 0, zip (true_labels, predicted_labels)))
-
-    print "Accuracy: %.5f" %(correct_count / float(len (true_labels)))
-
-def read_classifier (path):
-    """
-    read the pickled classifier
-    """
-    return load (open (path, 'r'))
-
-def train_classifier (path = '../data/classifier.pickle'):
-    
-    c = NBClassifier ()
-
-    print 'reading data... '
-    neg = list(read_traindata ('../data/neg'))
-    pos = list(read_traindata ('../data/pos'))
-    
-    dataset = pos + neg
-
-    print 'training...'
-    c.train ( dataset )
-
-    from pickle import dump
-    dump(c, open('../data/classifier.pickle', 'w'))
-    
-if __name__ == "__main__":
-    import sys
-    action = sys.argv [1]
-    if action == 'train':
-        train_classifier ()
-    elif action == 'measure':
-        performance_measure ()
-    else:
-        print 'invalid option'

@@ -3,6 +3,7 @@ Utility function package
 """
 import chardet, codecs
 
+from classifier import NBClassifier
 
 from nltk.stem.lancaster import LancasterStemmer
 st = LancasterStemmer()
