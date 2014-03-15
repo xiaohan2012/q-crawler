@@ -12,7 +12,7 @@ class ReadTrainDataTest (unittest.TestCase):
         print self.filename
 
     def test_ordinary (self):
-        rows = list(read_traindata (self.filename))
+        rows = list(read_traindata (self.filename, labels=['spam', 'ham']))
         
         self.assertEqual(len(rows), 6)
         

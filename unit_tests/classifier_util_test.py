@@ -14,7 +14,7 @@ class ReadClassifier (unittest.TestCase):
         
         # get the classifier
         classifier = NBClassifier ()
-        traindata = read_traindata (setting.DIRNAME + '/data/train.txt')
+        traindata = read_traindata (setting.DIRNAME + '/data/train.txt', labels=['ham','spam'])
         classifier.train (traindata)
         
         #save the classifier

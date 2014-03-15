@@ -11,7 +11,7 @@ class NBClassifierToyTest (unittest.TestCase):
         first train the model
         """
         self.classifier = NBClassifier ()
-        traindata = read_traindata (setting.DIRNAME + '/data/train.txt')
+        traindata = read_traindata (setting.DIRNAME + '/data/train.txt', labels=['spam', 'ham'])
         self.classifier.train (traindata)
 
     def test_prediction1 (self):
@@ -92,7 +92,7 @@ class NBClassifierIncrementalTrainTest (unittest.TestCase):
         first train the model
         """
         self.classifier = NBClassifier ()
-        traindata = read_traindata (setting.DIRNAME + '/data/train.txt')
+        traindata = read_traindata (setting.DIRNAME + '/data/train.txt', labels=['spam', 'ham'])
         self.classifier.train (traindata)
 
     def test_train (self):

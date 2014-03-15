@@ -17,12 +17,13 @@ def performance_measure ():
     random.shuffle(dataset)
     
     #partition training and testing set 4:1 
-    train_set = dataset [:1600]
-    test_set = dataset [1600:]
+    train_set = dataset [:1500]
+    test_set = dataset [1500:]
     
     print 'training...'
     c.train ( train_set )
 
+    assert len(c.pt.keys ()) == 2
     assert len(c.cpd.keys ()) == 2
     assert 'pos' in c.cpd.keys ()
     assert 'neg' in c.cpd.keys ()
@@ -32,10 +33,10 @@ def performance_measure ():
         table = c.predict (doc)
         return max (table.keys (), key=lambda label: table[label])
 
-    predicted_labels = map(lambda (doc, label): get_label (doc) , test_set)
-    true_labels = map (lambda (doc, label): label, test_set)
+    predicted_labels, true_labels = zip(*map(lambda (doc, label): (get_label (doc), label) , test_set))
+    
     correct_count = sum(map (lambda (tl, pl): tl == pl and 1 or 0, zip (true_labels, predicted_labels)))
-
+    print zip(predicted_labels, true_labels)
     print "Accuracy: %.5f" %(correct_count / float(len (true_labels)))
 
 def train_classifier (path = '../data/classifier.pickle'):
@@ -50,9 +51,9 @@ def train_classifier (path = '../data/classifier.pickle'):
     print 'training...'
     c.train ( dataset )
 
+    assert len(c.pt.keys ()) == 2
     assert len(c.cpd.keys ()) == 2
-    assert 'pos' in c.cpd.keys ()
-    assert 'neg' in c.cpd.keys ()
+
     
     dump(c, open('../data/classifier.pickle', 'w'))
 
@@ -60,7 +61,14 @@ def read_classifier (path):
     """
     read the pickled classifier
     """
-    return load (open (path, 'r'))
+    c = load (open (path, 'r'))
+    
+    #make sure things are correct
+    assert len(c.pt.keys ()) == 2
+    assert len(c.cpd.keys ()) == 2
+
+    
+    return c
     
 if __name__ == "__main__":
     import sys

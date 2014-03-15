@@ -8,7 +8,7 @@ from classifier import NBClassifier
 from nltk.stem.lancaster import LancasterStemmer
 st = LancasterStemmer()
 
-def read_traindata (filename):
+def read_traindata (filename, labels = ['pos', 'neg']):
     """
     Read the train dataset, given the filename
     """
@@ -24,6 +24,10 @@ def read_traindata (filename):
     with codecs.open (filename, 'r', encoding) as f:
         for line in f.readlines ():
             row =  split (line)
+            assert len (row) == 2
+            assert isinstance(row [0], list)
+            assert isinstance(row [1], basestring)
+            assert row [1] in labels
             yield row
 
 def normalize_word (word):

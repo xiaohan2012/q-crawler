@@ -13,7 +13,7 @@ for path in $paths; do
     echo $path
     
     if [ "$LABEL" != "" ]; then
-	echo $(python page_util.py $path)"\t$LABEL" > $WORDS_DIR/$name 
+	echo $(python page_util.py $path)"\t$LABEL" #> $WORDS_DIR/$name 
     else
 	echo $(python page_util.py $path) > $WORDS_DIR/$name 
     fi
