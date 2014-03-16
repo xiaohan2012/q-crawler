@@ -40,7 +40,11 @@ class ShouldCollect (unittest.TestCase):
 
     def test_shouldnot1 (self):
         self.assertFalse(should_collect_url ('http://en.wikipedia.org/wiki/Baum%E2%80%93Welch_algorithm#Forward_Procedure', 
-                                         'http://en.wikipedia.org/wiki/Baum%E2%80%93Welch_algorithm'))
+                                             'http://en.wikipedia.org/wiki/Baum%E2%80%93Welch_algorithm'))
+    def test_shouldnot2 (self):
+        self.assertFalse(should_collect_url ('javascript:click ()', 
+                                             'http://en.wikipedia.org/wiki/Baum%E2%80%93Welch_algorithm'))
+                                             
         
 class ShouldClimbupTest (unittest.TestCase):
     """

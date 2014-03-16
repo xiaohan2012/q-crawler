@@ -6,7 +6,6 @@ from itertools import chain
 from pyquery import PyQuery as pq
 from urlparse import urljoin
 
-from url_validate import is_valid
 from util import normalize_word
 
 
@@ -118,7 +117,7 @@ def should_collect_url (url, page_url):
     from urlparse import urlparse
     url = urlparse (url)
     page_url = urlparse (page_url)
-    if (url.netloc + url.path + url.params + url.query) != (page_url.netloc + page_url.path + page_url.params + page_url.query):
+    if (url.netloc + url.path + url.params + url.query) != (page_url.netloc + page_url.path + page_url.params + page_url.query) and url.scheme in ("http", "https"):
         return True
     return False
     
