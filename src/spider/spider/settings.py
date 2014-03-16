@@ -20,3 +20,8 @@ ITEM_PIPELINES = {
 
 
 CLOSESPIDER_ITEMCOUNT=10000 #crawling only 10000 pages
+
+START_URLS = ['http://www.allmusic.com/',
+              'http://www.reddit.com/',
+              'http://www.bbc.com/news/',
+              'http://stackoverflow.com/']

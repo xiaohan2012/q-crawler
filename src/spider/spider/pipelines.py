@@ -5,6 +5,6 @@
 
 class UrlPipeline(object):
     def process_item(self, item, spider):
-        with open ('data/python/urls.txt', "a") as f:
+        with open ('data/python/urls-%s.txt' %spider.name, "a") as f:
             f.write ("%s\t%f\n" %(item ['url'], item ['interestness']))
         return item
