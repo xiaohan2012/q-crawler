@@ -6,6 +6,9 @@ import re, string
 from pyquery import PyQuery as pq
 from util import normalize_word
 
+import nltk
+nltk.download ('stopwords')
+
 from nltk.corpus import stopwords
 stopwords = stopwords.words ('english')
 

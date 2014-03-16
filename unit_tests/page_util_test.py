@@ -1,7 +1,8 @@
 import setting
-import unittest
+import unittest,nltk
 
 from src.page_util import clean, html2words
+
 
 class PageCleanTest (unittest.TestCase):
     """

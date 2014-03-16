@@ -27,6 +27,7 @@ def read_traindata (filename, labels = ['pos', 'neg']):
             assert len (row) == 2
             assert isinstance(row [0], list)
             assert isinstance(row [1], basestring)
+            print row [1]
             assert row [1] in labels
             yield row
 

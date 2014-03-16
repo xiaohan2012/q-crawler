@@ -57,6 +57,8 @@ class NBClassifierRealTest (unittest.TestCase):
         """
         first train the model
         """
+        nltk.download ('movie_reviews')
+        
         documents = [(map(lambda word: word.lower (), list(movie_reviews.words(fileid))), category)
                      for category in movie_reviews.categories()
                      for fileid in movie_reviews.fileids(category)]
