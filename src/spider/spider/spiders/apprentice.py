@@ -1,7 +1,7 @@
 from scrapy.selector import Selector
 from scrapy.contrib.linkextractors.sgml import SgmlLinkExtractor
 from scrapy.contrib.spiders import CrawlSpider, Rule
-from spider.items import SpiderItem
+from spider.items import UrlItem
 
 class ApprenticeSpider(CrawlSpider):
     name = 'apprentice'

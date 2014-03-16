@@ -13,3 +13,10 @@ NEWSPIDER_MODULE = 'spider.spiders'
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 #USER_AGENT = 'spider (+http://www.yourdomain.com)'
+
+ITEM_PIPELINES = {
+    'spider.pipelines.UrlPipeline': 300,
+}
+
+
+CLOSESPIDER_ITEMCOUNT=10000 #crawling only 10000 pages

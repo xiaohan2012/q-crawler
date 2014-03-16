@@ -5,7 +5,8 @@
 
 from scrapy.item import Item, Field
 
-class SpiderItem(Item):
+class UrlItem(Item):
     # define the fields for your item here like:
     # name = Field()
-    pass
+    url = Field ()
+    interestness = Field ()

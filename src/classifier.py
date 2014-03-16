@@ -125,5 +125,4 @@ class NBClassifier (Classifier):
         B = max (log_probs.values ())
         total = math.log (sum (map (lambda b_c: math.exp (b_c - B), log_probs.values()))) + B
         result = dict(map (lambda (cls, log_prob): (cls, math.exp(log_prob - total)),  log_probs.items ()))
-        print result,
         return result 

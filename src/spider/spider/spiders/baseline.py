@@ -1,7 +1,7 @@
 from scrapy.selector import Selector
 from scrapy.contrib.linkextractors.sgml import SgmlLinkExtractor
 from scrapy.contrib.spiders import CrawlSpider, Rule
-from spider.items import SpiderItem
+from spider.items import UrlItem
 from scrapy.http import Request
 
 import os
@@ -16,8 +16,7 @@ from scraper import collect_urls
 
 class BaselineSpider(CrawlSpider):
     name = 'baseline'
-    start_urls = ['https://www.python.org/',
-                  'http://www.bbc.com/news/']
+    start_urls = ['http://www.bbc.com/news/']
     
     rules = (
         Rule(SgmlLinkExtractor(unique=True), callback='parse_item', follow=True),
@@ -39,13 +38,20 @@ class BaselineSpider(CrawlSpider):
         probs = BaselineSpider.classifier.predict (words)
         
         interestness = probs ['pos']
-        print 'Interestness of [%s]= %.4f' %(response.url, interestness)
+        #print 'Interestness of [%s]= %.4f' %(response.url, interestness)
         
         if interestness > .5:
-            print "Collect all the urls as it is interesting"
+            #print "Collect all the urls as it is interesting"
             urls = collect_urls (response.body, response.url)
             for url in urls:
                 priority = int(interestness * 10**3)#converting the priority to int to accord with the PriorityQueue spec
                 yield Request (url, priority = priority) #added to the pool
         else:
-            print 'Skipping as it is not interesed at all'
+            pass
+            #print 'Skipping as it is not interesed at all'
+        
+        
+        item = UrlItem ()
+        item ['url'] = response.url
+        item ['interestness'] = interestness
+        yield item
