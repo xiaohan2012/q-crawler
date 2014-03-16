@@ -28,9 +28,11 @@ class NBClassifier (Classifier):
         self._feature_freq = defaultdict (Counter) #the counter for features under different labels
         self._vocabulary = set (['__RARE__'])
         
-        self._classes = None
-        self.pt = None
-        self.cpd = None
+        self._classes = []
+        self.pt = {}
+        self.cpd = defaultdict (dict)
+
+        self.is_trained = False
 
     def label_freq (self):
         return self._label_freq
@@ -52,7 +54,9 @@ class NBClassifier (Classifier):
         rare_threshold: what is the minimum frequency of words that we would not consider it as rare
         
         Return: None
-        """            
+        """
+        self.is_trained = True
+        
         texts = list (texts) #to lists!not generator
         
         #compute the prob table for classes, class frequencies
@@ -114,6 +118,9 @@ class NBClassifier (Classifier):
 
         Return: list of (class, the probability) in ascending order sorted by the probability
         """
+        if not self.is_trained: #if not trained, then be uncertain
+            return {'pos': .5, 'neg': .5}
+            
         get_log_prob = lambda cls, word: math.log(self.cpd [cls] [word if self.cpd [cls].has_key (word) else '__RARE__']) #handy function that gives log(P (word|cls))
         
         log_probs = {}
