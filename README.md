@@ -3,70 +3,39 @@ Q-crawler
 
 [![Build Status](https://travis-ci.org/xiaohan2012/q-crawler.png?branch=master)](https://travis-ci.org/xiaohan2012/q-crawler)
 
-*Reinforcement learning* based Focused Web crawler by improving the Q-function
+*Reinforcement learning* based Focused Web crawler, which aims at crawling on-topic webpages more efficiently by learning via the process of crawling
+
+#Usage
 
 
-#Introduction
+##Preparation
 
-##Reinforcement learning elements
+In order to crawl webpages of given topics, it is necessary to define the topic.
 
-1. State space: only one (thus, only one type of state transition)
-2. Action space: fetch some URL(distinguished by the bag-of-words about it on the webpage)
-3. Reward function: the score/probability assigned by a topic classifier
-4. Q function: bag-of-words -> numerical reward mapping
+In this context, topic can be defined by providing labeled webpages each of which are either labled as positive (on-topic) or negative (off-topic)
 
-The webpage its received can be analysed (does the link representation says a lot about the webpage's topic) and used to update the Q function.
-
-#Crawling work flow
-
-Input: a URL pool intialized with seed URLs and a topical classifier
-
-1.  get the URL that has the highest Q value and fetch the page.
-2.  strip all the html tags except `<a></a>` and link all the URLs within the page.
-3.  analyze the page extract the main content, rate it using the classifier and associate it with the URL's bag-of-words to update the Q function(And even the classifier!).
-4.  associate each URL with the surrouding words.
-5.  save new URLs with their surrounding words into the URL pool.
-6.  return to step **1**.
+##Run the software
 
 
-#Bag-of-words of the URL
+#Methodology
 
-Through several informative places, some hints about what webpage behind the URL might be about can be found through:
+##Supervisor&Apprentice Model
 
-1. Surrouding text of the url
-2. The title of the url
-3. The display text of the url
+- Supervisor: classifier that rates the relativeness of acquired webpage
+- Apprentice: another classifier that uses the above feedback to learn what kind of urls are more likely to lead to valuable webpages
 
-#Classifier
-
-The classifier is training using a set of webpages/text that are about a specific topics (e.g, Python) plus a random set of off-topic pages. And the input it receives is a set of words and output the probability that it belongs to that topic.
-
-*Note*: Can I simply this part? Maybe use some available classifier?
-
-#Q-function
-
-Q-function is an approximation of the future reward that taking a specific action will yield.
-
-It receives a bag of words and output a numerical value.
+##Why Reinforcement learning?
 
 
-##Calculation
-Assuming each term contributes independently to the "topicness", then each term will be assigned a numerical value about its contribution.
+##URL representation
 
-Given the bag of words, it simply sums up the corresponding numerical contributions or *weight*.
-	
-##Backpropagation
+It is intuitive to represent the URLs as its anchor terms together with its surroudning terms.
 
-Once we found a good webpage (e.g, Python), the terms in which webpages (e.g, some programming forum) that point to the useful page should be given some increase/reward.
+In addition, q-cralwer incorporates each term's *offset* to the link, its DOM-distance to the link. 
 
-We assume terms in webpages which are within distance of 5 are rewarded.
+The intuition is: terms that are of different distance in terms of DOM structure should be considered differently. For example, anchor text should tell more about the URL while surrounding text are less predictive.
 
 
+#Experiment
 
-
-#Future
-
-1. mark the visited url as visited
-2. Some functional tests
-3. make url absolute
-4. avoid this kind of stuffjavascript:void(0) 
+Two crawlers, one baseline crawler, the other the apprentice-based crawler are compared in terms of the ability to crawl ontopic webpages efficiently.
