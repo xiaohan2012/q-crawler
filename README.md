@@ -56,8 +56,8 @@ And the produced classifier will be pickled and put in `data/classifier.pickle`.
 
 ```
 cd src/spider
-scrapy crawl apprentice %for the reinforcement learning based crawler
-scrapy crawl baseline %for the reinforcement learning based crawler
+scrapy crawl apprentice 
+scrapy crawl baseline
 ```
 
 ##Performance monitoring
