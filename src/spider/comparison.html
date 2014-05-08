@@ -7,14 +7,17 @@
     <script src="https://raw.githubusercontent.com/bebraw/Chart.js.legend/master/src/legend.js"></script>
     <link href="https://raw.githubusercontent.com/bebraw/Chart.js.legend/master/css/demo.css">
 
+    <script src="apprentice_stat.js"></script>
+    <script src="baseline_stat.js"></script>
+
     <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
     <style>
-      #lineLegend{
-      bottom: -60px;
-      position: relative;
-      right: -60px;
-      width: 200px;
-      }
+     #lineLegend{
+       bottom: -60px;
+       position: relative;
+       right: -60px;
+       width: 200px;
+     }
 
      #lineLegend span{
        display: block;
@@ -23,50 +26,55 @@
     </style>
   </head>
   <body>
+    <h3 style="margin-left: 500px;">Performance comparison between RL-based focused crawler and baseline focused crawler</h3>
+    <h4 style="float: left;line-height:400px;">Relevance score accumulated</h4>
+    <div style="float: left;">
+      <div id="lineLegend"></div>
+      <canvas id="myChart" width="1200" height="400" >
+      </canvas>
+    </div>
+    <div style="clear:both"></div>
+    <h4 style="margin-left: 800px;">#URL crawled</h4>
+  </body>
 
-    <div id="lineLegend"></div>
-    <canvas id="myChart" width="800" height="400">
-    </canvas>
-    <script>
+  <script>
 
-     $.getJSON("apprentice.json", function(apprentice_data){
-       $.getJSON("baseline.json", function(baseline_data){
-	 var labels = [];
-	 for(var i = 1; i<=apprentice_data.length;i++){
-	   labels.push(i);
-	 }
-	 var data = {
-	   labels : labels,
-	   datasets : [
-	     {
-	       fillColor : "rgba(220,220,220,0.5)",
-	       strokeColor : "rgba(220,220,220,1)",
-	       pointColor : "rgba(220,220,220,1)",
-	       pointStrokeColor : "#fff",
-	       data : apprentice_data,
-	       title: "Apprentice-critic model"
-	     },
-	     {
-	       fillColor : "rgba(151,187,205,0.5)",
-	       strokeColor : "rgba(151,187,205,1)",
-	       pointColor : "rgba(151,187,205,1)",
-	       pointStrokeColor : "#fff",
-	       data : baseline_data,
-	       title: "Baseline"
-	     }
-	   ]
-	 };
 
-	 var ctx = document.getElementById("myChart").getContext("2d");
-	 var myNewChart = new Chart(ctx).Line(data,
-					      {datasetFill: false}
-					      );
+   var labels = [];
+   for(var i = 1; i<=apprentice_data.length;i++){
+     labels.push(i * 250);
+   }
+   var data = {
+     labels : labels,
+     datasets : [
+       {
+	 fillColor : "rgba(151,187,205,0.5)",
+	 strokeColor : "rgba(151,187,205,1)",
+	 pointColor : "rgba(151,187,205,1)",
+	 pointStrokeColor : "#fff",
+	 data : apprentice_data,
+	 title: "RL-based crawler"
+       },
+       {
+	 fillColor : "rgba(220,220,220,0.5)",
+	 strokeColor : "rgba(220,220,220,1)",
+	 pointColor : "rgba(220,220,220,1)",
+	 pointStrokeColor : "#fff",
+	 data : baseline_data,
+	 title: "Baseline crawler"
+       }
+     ]
+   };
 
-	 legend(document.getElementById("lineLegend"), data);
+   var ctx = document.getElementById("myChart").getContext("2d");
+   var myNewChart = new Chart(ctx).Line(data,
+					{datasetFill: false,
+					 scaleLabel : "<%=value%>",
+					 }
+					);
 
-       })
-     });
+   legend(document.getElementById("lineLegend"), data);
 
-    </script>
+  </script>
   </body>
 </html>

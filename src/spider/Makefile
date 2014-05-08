@@ -7,5 +7,5 @@ html:
 
 stat:
 	python gen_html_data.py
-	cp data/python/apprentice_stat.js ~/public_html/rl-project/apprentice.json
-	cp data/python/baseline_stat.js ~/public_html/rl-project/baseline.json
+	cp baseline_stat.js ~/public_html/rl-project
+	cp apprentice_stat.js ~/public_html/rl-project
