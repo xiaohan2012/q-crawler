@@ -31,7 +31,7 @@ To see how the RL-based crawler compares to the baseline crawler(the ordinary on
 ```
 cd src/spider
 ./ctrl.sh %run the crawler
-make
+python gen_html_data.py
 ```
 
 Last, open the `comparison.html` file using Web browser to see the performance comparison.
@@ -63,7 +63,7 @@ scrapy crawl baseline %for the reinforcement learning based crawler
 
 ```
 cd src/spider
-make
+python gen_html_data.py
 ```
 
 Open the `comparison.html` using modern web browser(Firefox 24.4.0 tested OK).
