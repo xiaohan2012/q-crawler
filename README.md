@@ -38,7 +38,8 @@ Open the `comparison.html` using modern web browser(Firefox 24.4.0 tested OK)
 
 ##Configuration
 
-1. changing the maximum number of crawled URLs:
+1. Maximum number of crawled URLs: change  `CLOSESPIDER_ITEMCOUNT`'s value in [this](https://github.com/xiaohan2012/q-crawler/blob/master/src/spider/spider/settings.py) file
+2. Starting URLs: change`START_URLS`'s value in [this](https://github.com/xiaohan2012/q-crawler/blob/master/src/spider/spider/settings.py) file
 
 #Contact
 xiaohan2012 at gmail.com
