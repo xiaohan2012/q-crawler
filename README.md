@@ -30,7 +30,7 @@ To see how the RL-based crawler compares to the baseline crawler(the ordinary on
 
 ```
 cd src/spider
-./ctrl.sh %run the crawler
+./ctrl.sh %run the crawler and feel free to have a cup of coffee during the crawling :)
 python gen_html_data.py
 ```
 

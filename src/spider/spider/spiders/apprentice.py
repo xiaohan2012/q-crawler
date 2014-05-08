@@ -23,10 +23,10 @@ class ApprenticeSpider(CrawlSpider):
         Rule(SgmlLinkExtractor(unique=True), callback='parse_item', follow=True),#should it be unique 
     )
     
-    print 'Loading supervisor...'
+    print 'Loading critic...'
     print "path", os.path.join(DIRNAME, '../../../../data/classifier.pickle')
     supervisor = read_classifier (os.path.join(DIRNAME, '../../../../data/classifier.pickle'))
-    print 'Supervisor loaded...'
+    print 'Critic loaded...'
 
     apprentice = NBClassifier ()
     
