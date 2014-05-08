@@ -21,7 +21,7 @@ class BaselineSpider(CrawlSpider):
     rules = (
         Rule(SgmlLinkExtractor(unique=True), callback='parse_item', follow=True),
     )
-
+    
     print 'Loading classifier...'
     print "path", os.path.join(DIRNAME, '../../../../data/classifier.pickle')
     classifier = read_classifier (os.path.join(DIRNAME, '../../../../data/classifier.pickle'))

@@ -14,7 +14,8 @@ def should_climbup (node):
     determine if the node has some meaningful siblings (including text)
     stuff like "\n  " or "  \t   " is not meaningful
     """
-    return len(filter(lambda c: c.strip () != "" if isinstance (c,basestring) else True, node.parent().contents())) == 1
+    return len(filter(lambda c: c.strip () != "" if isinstance (c,basestring) else True, 
+                      node.parent().contents())) == 1
 
 def text2words (text):
     """
@@ -34,7 +35,7 @@ def collect_words (node, start_offset, max_offset):
         return []
 
 
-    real_contents = filter(lambda c: c.strip () != "" if isinstance (c,basestring) else True, 
+    real_contents = filter(lambda c: c.strip () != "" if isinstance (c, basestring) else True, 
                            node.contents()) #filter out meaningless text
     
     is_text = lambda obj: isinstance (obj, basestring)
@@ -49,7 +50,7 @@ def collect_words (node, start_offset, max_offset):
 
     for elem in elems:
         words += collect_words (pq (elem), start_offset + 1, max_offset)
-        
+    
     return words
     
 def scrape_url_and_words (doc, page_url, level = 3, unnecessary_tags = ['script', 'style']):
@@ -74,19 +75,24 @@ def scrape_url_and_words (doc, page_url, level = 3, unnecessary_tags = ['script'
                     text2words (title) + text2words (anchor_text))
         
         starting_point = link
-            
+        ancestor = link[0]
+        #link.parent().parent()
         #keep climbing to until the ancestor level has some siblings
+        #print "should go up", should_climbup (starting_point)
         while should_climbup (starting_point):
             starting_point = starting_point.parent ()
+            ancestor = starting_point[0]
 
+        siblings = filter(lambda c: c.strip () != "" if isinstance (c,basestring) else True, 
+                          starting_point.parent ().contents ()) #remove those \n and \t stuff
+
+        index = filter (lambda (idx, node): node == ancestor, 
+                        enumerate (siblings)) [0] [0]  #find the position of the link
 
         #creeping along the siblings, 
         #get each word and its offset to the link
-
-        prevs, nexts = map(lambda elem: pq (elem),
-                    starting_point.prevAll () [::-1]), map(lambda elem: pq (elem), 
-                                                           starting_point.nextAll ())
-
+        prevs, nexts = map(lambda elem: pq (elem), siblings [:index] [::-1]), map(lambda elem: pq (elem),  siblings [index+1:])
+        
         #creeping backward (the previous siblings)
         for offset, node in zip(xrange (1, level+1), prevs[: level]):
             to_be_negative_words = collect_words (node, offset, level)

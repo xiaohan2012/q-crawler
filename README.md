@@ -8,11 +8,28 @@ Q-crawler
 #Usage
 
 
-##Preparation
+##Before you run
 
 In order to crawl webpages of given topics, it is necessary to define the topic.
 
-In this context, topic can be defined by providing labeled webpages each of which are either labled as positive (on-topic) or negative (off-topic)
+In this context, topic can be defined by providing labeled webpages, each of which are either labled as positive (on-topic) or negative (off-topic).
+
+This corpus preparation process is done in the following procedure:
+
+1. collect webpages and label each of them as either positive or negative
+2. use the utility script `pages2word.sh` to convert webpages to bag of words
+3. group the page words by their labels and aggregate each group into one single file (format to be specified below), such as `pos` for the positive webpages and `neg` for the negative ones.
+4. put the `pos` and `neg` corpus file under the `data/` directory
+
+Each webpage occupies one line, containing the words separated by `\t` and a lable, either `pos` or `neg` is appended to the tail, with a `\t` preceding it. 
+
+Such example is:
+
+
+```
+word1\tword2\tword3\tpos
+word3\tword4\tword5\tneg
+```
 
 ##Run the software
 

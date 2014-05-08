@@ -31,7 +31,13 @@ class ScraperTest (unittest.TestCase):
                             key=lambda (w,offset): offset))]
         self.assertEqual (expected, 
                         links)
-        
+
+    def test_real_page1(self):
+        """
+        some random code snippet from stackoverflow 
+        """
+        doc = open (setting.DIRNAME + '/pages/so_random.html').read ()
+        links = scrape_url_and_words (doc, "http://stackoverflow.com", level = 3)
         
 class ShouldCollect (unittest.TestCase):
     def test_should (self):

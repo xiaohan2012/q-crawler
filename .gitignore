@@ -39,8 +39,8 @@ nosetests.xml
 .pydevproject
 
 *.*~
+*~
 
 headers
 cookies
-data
 .ropeproject

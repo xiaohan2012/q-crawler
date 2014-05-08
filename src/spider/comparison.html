@@ -1,0 +1,72 @@
+<html>
+  <head>
+    <title>
+      Performance Comparison between reinforcement learning based crawler and oridinary baseline crawler
+    </title>
+    <script src="https://raw.githubusercontent.com/nnnick/Chart.js/master/Chart.min.js"></script>
+    <script src="https://raw.githubusercontent.com/bebraw/Chart.js.legend/master/src/legend.js"></script>
+    <link href="https://raw.githubusercontent.com/bebraw/Chart.js.legend/master/css/demo.css">
+
+    <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+    <style>
+      #lineLegend{
+      bottom: -60px;
+      position: relative;
+      right: -60px;
+      width: 200px;
+      }
+
+     #lineLegend span{
+       display: block;
+       margin-bottom: 5px;
+     }
+    </style>
+  </head>
+  <body>
+
+    <div id="lineLegend"></div>
+    <canvas id="myChart" width="800" height="400">
+    </canvas>
+    <script>
+
+     $.getJSON("apprentice.json", function(apprentice_data){
+       $.getJSON("baseline.json", function(baseline_data){
+	 var labels = [];
+	 for(var i = 1; i<=apprentice_data.length;i++){
+	   labels.push(i);
+	 }
+	 var data = {
+	   labels : labels,
+	   datasets : [
+	     {
+	       fillColor : "rgba(220,220,220,0.5)",
+	       strokeColor : "rgba(220,220,220,1)",
+	       pointColor : "rgba(220,220,220,1)",
+	       pointStrokeColor : "#fff",
+	       data : apprentice_data,
+	       title: "Apprentice-critic model"
+	     },
+	     {
+	       fillColor : "rgba(151,187,205,0.5)",
+	       strokeColor : "rgba(151,187,205,1)",
+	       pointColor : "rgba(151,187,205,1)",
+	       pointStrokeColor : "#fff",
+	       data : baseline_data,
+	       title: "Baseline"
+	     }
+	   ]
+	 };
+
+	 var ctx = document.getElementById("myChart").getContext("2d");
+	 var myNewChart = new Chart(ctx).Line(data,
+					      {datasetFill: false}
+					      );
+
+	 legend(document.getElementById("lineLegend"), data);
+
+       })
+     });
+
+    </script>
+  </body>
+</html>

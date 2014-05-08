@@ -22,7 +22,7 @@ class ApprenticeSpider(CrawlSpider):
     rules = (
         Rule(SgmlLinkExtractor(unique=True), callback='parse_item', follow=True),#should it be unique 
     )
-
+    
     print 'Loading supervisor...'
     print "path", os.path.join(DIRNAME, '../../../../data/classifier.pickle')
     supervisor = read_classifier (os.path.join(DIRNAME, '../../../../data/classifier.pickle'))
