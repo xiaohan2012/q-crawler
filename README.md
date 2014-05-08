@@ -3,10 +3,24 @@ Q-crawler
 
 [![Build Status](https://travis-ci.org/xiaohan2012/q-crawler.png?branch=master)](https://travis-ci.org/xiaohan2012/q-crawler)
 
-#Installation
+#Preparation
 
+##Virtual environment
+Run
 ```
-git clone
+cd q-crawler
+virtualenv venv
+```
+to setup the virtual environment.
+
+Run 
+```
+source venv/bin/activate
+```
+to ensure the virtual environment is activated.
+
+##Dependency resolving
+```
 pip install -r requirements.txt
 ```
 
