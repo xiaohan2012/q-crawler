@@ -24,7 +24,7 @@ Last, open the `comparison.html` file using Web browser to see the performance c
 
 The crawling process might run 15~20 minutes, varied by the Internet connection speed.
 
-If you want to speed up the process, the number of URLs to be crawled can be changed(default to 10000). See (configraution)[https://github.com/xiaohan2012/q-crawler/#configuration].
+If you want to speed up the process, the number of URLs to be crawled can be changed(default to 10000). See [configraution](https://github.com/xiaohan2012/q-crawler/#configuration).
 
 #Usage
 
