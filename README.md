@@ -11,6 +11,20 @@ Q-crawler
 
 #Run the demo
 
+To see how the RL-based crawler compares to the baseline crawler(the ordinary one), run the following command
+
+`>> cd src/spider`
+
+`>> ./ctrl.sh %run the crawler`
+
+`>> make`
+
+Last, open the `comparison.html` file using Web browser to see the performance comparison.
+
+The crawling process might run 15~20 minutes, varied by the Internet connection speed.
+
+If you want to speed up the process, the number of URLs to be crawled can be changed(default to 10000). See (configraution)[https://github.com/xiaohan2012/q-crawler/#configuration].
+
 #Usage
 
 ##training
