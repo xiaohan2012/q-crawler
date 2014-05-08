@@ -32,7 +32,9 @@ Q-crawler
 
 `>> make`
 
-Open the `comparison.html` using modern web browser(Firefox 24.4.0 tested OK)
+Open the `comparison.html` using modern web browser(Firefox 24.4.0 tested OK).
+
+Some example performance plot is [here](http://www.cs.helsinki.fi/u/hxiao/rl-project/comparison.html).
 
 ##Training data preprocessing 
 
