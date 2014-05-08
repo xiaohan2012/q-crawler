@@ -3,14 +3,35 @@
     <title>
       Performance Comparison between reinforcement learning based crawler and oridinary baseline crawler
     </title>
-    <script src="https://raw.githubusercontent.com/nnnick/Chart.js/master/Chart.min.js"></script>
-    <script src="https://raw.githubusercontent.com/bebraw/Chart.js.legend/master/src/legend.js"></script>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/Chart.js/0.2.0/Chart.min.js"></script>
     <link href="https://raw.githubusercontent.com/bebraw/Chart.js.legend/master/css/demo.css">
 
     <script src="apprentice_stat.js"></script>
     <script src="baseline_stat.js"></script>
 
     <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+    <script>
+     function legend(parent, data) {
+       parent.className = 'legend';
+     var datas = data.hasOwnProperty('datasets') ? data.datasets : data;
+
+     // remove possible children of the parent
+     while(parent.hasChildNodes()) {
+       parent.removeChild(parent.lastChild);
+     }
+
+     datas.forEach(function(d) {
+       var title = document.createElement('span');
+       title.className = 'title';
+       title.style.borderColor = d.hasOwnProperty('strokeColor') ? d.strokeColor : d.color;
+       title.style.borderStyle = 'solid';
+       parent.appendChild(title);
+
+       var text = document.createTextNode(d.title);
+       title.appendChild(text);
+     });
+     }
+    </script>
     <style>
      #lineLegend{
        bottom: -60px;
