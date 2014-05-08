@@ -5,19 +5,20 @@ Q-crawler
 
 #Installation
 
-`>>git clone`
-
-`>>pip install -r requirements.txt`
+```
+git clone
+pip install -r requirements.txt
+```
 
 #Run the demo
 
 To see how the RL-based crawler compares to the baseline crawler(the ordinary one), run the following command
 
-`>> cd src/spider`
-
-`>> ./ctrl.sh %run the crawler`
-
-`>> make`
+```
+cd src/spider
+./ctrl.sh %run the crawler
+make
+```
 
 Last, open the `comparison.html` file using Web browser to see the performance comparison.
 
@@ -29,24 +30,27 @@ If you want to speed up the process, the number of URLs to be crawled can be cha
 
 ##training
 
-`>> cd src`
-
-`>> python classifier_util.py train`
+```
+cd src
+python classifier_util.py train
+```
 
 And the produced classifier will be pickled and put in `data/classifier.pickle`.
 
 ##crawling
-`>> cd src/spider`
 
-`>> scrapy crawl apprentice %for the reinforcement learning based crawler`
-
-`>> scrapy crawl baseline %for the reinforcement learning based crawler`
+```
+cd src/spider
+scrapy crawl apprentice %for the reinforcement learning based crawler
+scrapy crawl baseline %for the reinforcement learning based crawler
+```
 
 ##Performance monitoring
 
-`>> cd src/spider`
-
-`>> make`
+```
+cd src/spider
+make
+```
 
 Open the `comparison.html` using modern web browser(Firefox 24.4.0 tested OK).
 
