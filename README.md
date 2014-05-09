@@ -25,6 +25,8 @@ pip install -r requirements.txt
 ```
 Be patient. It might take several minutes.
 
+You may encounter the error:  `/bin/sh: xslt-config: not found`. Please see this [post](http://stackoverflow.com/questions/5178416/pip-install-lxml-error) for solution.
+
 #Run the demo
 
 To see how the RL-based crawler compares to the baseline crawler(the ordinary one), run the following command
