@@ -19,8 +19,9 @@ class BaselineSpider(CrawlSpider):
     start_urls = START_URLS
     
     rules = (
-        Rule(SgmlLinkExtractor(unique=True), callback='parse_item', follow=True),
+        Rule(SgmlLinkExtractor(unique=True), callback='parse_item', follow=False),
     )
+    crawled_urls = []
     
     print 'Loading classifier...'
     print "path", os.path.join(DIRNAME, '../../../../data/classifier.pickle')
@@ -28,10 +29,9 @@ class BaselineSpider(CrawlSpider):
     print 'Classifier loaded...'
     
     def parse_item(self, response):
-        #if this page is of interest (according to the NB classifier prediction result), 
-        # then add all its links to pool, 
-        # each of which the priority is the probability score
-
+        #we must do the manual URL collection work as the priority should be defined by us!
+        BaselineSpider.crawled_urls.append(response.url)
+        
         #html to words
         words = html2words (response.body)
 
@@ -40,24 +40,16 @@ class BaselineSpider(CrawlSpider):
         interestness = probs ['pos']
         #print 'Interestness of [%s]= %.4f' %(response.url, interestness)
         
-        if response.meta.has_key ('add_item_flag') and response.meta ['add_item_flag']:
-            #add item
-            item = UrlItem ()
-            item ['url'] = response.url
-            item ['interestness'] = interestness
-            yield item
-        else:
-            if interestness > .5:
-                #print "Collect all the urls as it is interesting"
-                urls = collect_urls (response.body, response.url)
-                for url in urls:
-                    priority = int(interestness * 10**3)#converting the priority to int to accord with the PriorityQueue spec
-                    req = Request (url, priority = priority, callback = self.parse_item)
-                    req.meta ['add_item_flag'] = True
-                    yield req#added to the pool
-            else:
-                pass
-                #print 'Skipping as it is not interesed at all'
-        
-        
-
+        # if response.meta.has_key ('add_item_flag') and response.meta ['add_item_flag']:
+        item = UrlItem ()
+        item ['url'] = response.url
+        item ['interestness'] = interestness
+        yield item
+        # else:
+        urls = collect_urls (response.body, response.url)
+        for url in urls:
+            if url in BaselineSpider.crawled_urls:
+                continue
+            priority = int(interestness * 10**3)#converting the priority to int to accord with the PriorityQueue spec
+            req = Request (url, priority = priority, callback = self.parse_item)
+            yield req#added to the pool                    
