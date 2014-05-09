@@ -43,6 +43,7 @@ The crawling process might run 15~20 minutes, varied by the Internet connection 
 
 If you want to speed up the process, the number of URLs to be crawled can be changed(default to 10000). See [configuration](https://github.com/xiaohan2012/q-crawler/#configuration).
 
+If you encounter `libffi.h not found`, try [this](http://stackoverflow.com/questions/12982486/glib-compile-error-ffi-h-but-libffi-is-installed/17518165#17518165).
 #Usage
 
 ##training
