@@ -27,6 +27,8 @@ Be patient. It might take several minutes.
 
 You may encounter the error:  `/bin/sh: xslt-config: not found`. Please see this [post](http://stackoverflow.com/questions/5178416/pip-install-lxml-error) for solution.
 
+If you encounter `ffi.h not found`, try [this](http://stackoverflow.com/questions/12982486/glib-compile-error-ffi-h-but-libffi-is-installed/17518165#17518165).
+#Usage
 #Run the demo
 
 To see how the RL-based crawler compares to the baseline crawler(the ordinary one), run the following command
@@ -43,8 +45,6 @@ The crawling process might run 15~20 minutes, varied by the Internet connection 
 
 If you want to speed up the process, the number of URLs to be crawled can be changed(default to 10000). See [configuration](https://github.com/xiaohan2012/q-crawler/#configuration).
 
-If you encounter `libffi.h not found`, try [this](http://stackoverflow.com/questions/12982486/glib-compile-error-ffi-h-but-libffi-is-installed/17518165#17518165).
-#Usage
 
 ##training
 
